@@ -1,0 +1,13 @@
+#!/bin/bash
+
+./tor-relay-scanner-go -4 -g 100 -o relays.tmp
+
+{
+    printf "[bridges]"
+    printf "\nenabled = true"
+    printf "\nbridges = '''\n"
+    awk '{print "Bridge " $0}' relays.tmp
+    printf "'''\n"
+} > relays.toml
+
+rm -vf relays.tmp
