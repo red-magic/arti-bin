@@ -1,13 +1,13 @@
 #!/bin/bash
 
-./tor-relay-scanner-go -4 -g 100 -o relays.tmp
+set -euo pipefail
 
-{
-    printf "[bridges]"
-    printf "\nenabled = true"
-    printf "\nbridges = '''\n"
-    awk '{print "Bridge " $0}' relays.tmp
+write_toml() {
+    printf "[bridges]\n"
+    printf "enabled = true\n"
+    printf "bridges = '''\n"
+    awk '{print "Bridge " $0}'
     printf "'''\n"
-} > relays.toml
+}
 
-rm -vf relays.tmp
+./tor-relay-scanner-go -4 -g 100 -s | write_toml > relays.toml
