@@ -2,12 +2,16 @@
 
 set -euo pipefail
 
+trap "rm -vf relays.toml" INT ERR
+
 write_toml() {
     printf "[bridges]\n"
     printf "enabled = true\n"
     printf "bridges = '''\n"
-    awk '{print "Bridge " $0}'
+    awk '{printf "Bridge %s\n", $0}'
     printf "'''\n"
 }
 
 ./tor-relay-scanner-go -4 -g 100 -s | write_toml > relays.toml
+
+cat relays.toml
