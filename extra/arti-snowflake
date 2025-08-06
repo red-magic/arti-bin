@@ -1,0 +1,11 @@
+#!/bin/bash
+
+arti_bin="${HOME}/.local/bin/arti proxy"
+arti_share="${HOME}/.local/share/arti"
+arti_snowflake="${HOME}/.config/arti/snowflake.toml"
+arti_args="-l error -c ${arti_snowflake}"
+
+# Fix connection issues on startup
+[[ -d "${arti_share}" ]] && rm -vrf "${arti_share}"
+
+${arti_bin} ${arti_args}
