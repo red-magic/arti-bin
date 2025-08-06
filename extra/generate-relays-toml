@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-trap "rm -vf relays.toml" INT ERR
+trap "rm -vf relays.toml" INT TERM ERR
 
 write_toml() {
     printf "[bridges]\n"
