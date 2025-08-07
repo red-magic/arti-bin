@@ -5,7 +5,6 @@ if pgrep arti &> /dev/null; then
     exit 1
 fi
 
-
 arti_bin_dir="${HOME}/.local/bin"
 arti_config_dir="${HOME}/.config/arti"
 arti_share_dir="${HOME}/.local/share/arti"
