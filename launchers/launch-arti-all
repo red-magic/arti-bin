@@ -1,0 +1,7 @@
+#!/bin/bash
+
+arti_bin="${HOME}/.local/bin/arti"
+arti_all="${HOME}/.config/arti/all.toml"
+arti_log="info"
+
+"${arti_bin}" proxy -c "${arti_all}" -l "${arti_log}"

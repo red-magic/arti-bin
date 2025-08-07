@@ -1,0 +1,51 @@
+#!/bin/bash
+
+if pgrep arti &> /dev/null; then
+    printf "Arti is running, stop it first\n"
+    exit 1
+fi
+
+
+arti_bin_dir="${HOME}/.local/bin"
+arti_config_dir="${HOME}/.config/arti"
+arti_share_dir="${HOME}/.local/share/arti"
+arti_cache_dir="${HOME}/.cache/arti"
+
+arti_install() {
+    install -vDm 755 arti -t "${arti_bin_dir}"
+
+    install -vm 755 launchers/launch-arti-all -t "${arti_bin_dir}"
+    install -vm 755 launchers/launch-arti-snowflake -t "${arti_bin_dir}"
+    install -vm 755 launchers/launch-arti-obfs4proxy -t "${arti_bin_dir}"
+
+    install -vm 755 plugins/snowflake-client -t "${arti_bin_dir}"
+    install -vm 755 plugins/obfs4proxy -t "${arti_bin_dir}"
+
+    install -vDm 644 configs/all.toml -t "${arti_config_dir}"
+    install -vm 644 configs/snowflake.toml -t "${arti_config_dir}"
+    install -vm 644 configs/bridges.toml -t "${arti_config_dir}"
+}
+
+arti_remove() {
+    rm -vf "${arti_bin_dir}/arti"
+
+    rm -vf "${arti_bin_dir}/launch-arti-snowflake"
+    rm -vf "${arti_bin_dir}/launch-arti-obfs4proxy"
+    rm -vf "${arti_bin_dir}/launch-arti-all"
+
+    rm -vf "${arti_bin_dir}/snowflake-client"
+    rm -vf "${arti_bin_dir}/obfs4proxy"
+
+    rm -vrf "${arti_config_dir}"
+    rm -vrf "${arti_share_dir}"
+    rm -vrf "${arti_cache_dir}"
+}
+
+case "$1" in
+    "remove")
+        arti_remove
+        ;;
+    "")
+        arti_install
+        ;;
+esac
