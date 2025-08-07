@@ -1,7 +1,6 @@
 #!/bin/bash
 
 arti_bin="${HOME}/.local/bin/arti"
-arti_share="${HOME}/.local/share/arti"
 arti_snowflake="${HOME}/.config/arti/snowflake.toml"
 arti_log="info"
 
