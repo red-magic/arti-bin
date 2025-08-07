@@ -3,9 +3,10 @@
 arti_bin="${HOME}/.local/bin/arti"
 arti_share="${HOME}/.local/share/arti"
 arti_snowflake="${HOME}/.config/arti/snowflake.toml"
-arti_log="error"
+arti_log="info"
 
 # Fix connection issues on startup
-[[ -d "${arti_share}" ]] && rm -vrf "${arti_share}"
+arti_circuit="${HOME}/.local/share/arti/state/circuit_timeouts.json"
+[[ -f "${arti_circuit}" ]] && rm -vf "${arti_circuit}"
 
 "${arti_bin}" proxy -c "${arti_snowflake}" -l "${arti_log}"
