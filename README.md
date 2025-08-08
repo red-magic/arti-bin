@@ -1,3 +1,12 @@
+# Anti-Censorship
+
+## Installation
+
+- `./install` to install everything to user directories.
+- `./install remove` to unistall it all.
+
+## Programs
+
 | Binary | Version |
 | --- | --- |
 | `arti` | [1.4.6](https://gitlab.torproject.org/tpo/core/arti/-/tags/arti-v1.4.6) |
