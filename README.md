@@ -3,7 +3,7 @@
 ## Installation
 
 - `./install` to install everything to user directories.
-- `./install remove` to unistall it all.
+- `./install remove` to uninstall it all.
 
 ## Programs
 
