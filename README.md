@@ -5,6 +5,16 @@
 - `./install` to install everything to user directories.
 - `./install remove` to uninstall it all.
 
+## Usage
+
+Run one of the following:
+
+- `launch-arti-all`
+- `launch-arti-obfs4proxy`
+- `launch-arti-snowflake`
+
+Make sure `.local/bin` is in your `$PATH` variable.
+
 ## Programs
 
 | Binary | Version |
