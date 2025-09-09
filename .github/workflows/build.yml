@@ -1,0 +1,218 @@
+name: Build Arti and Lyrebird
+
+on:
+  push:
+    tags:
+      - 'arti-[0-9]+\.[0-9]+\.[0-9]+-lyrebird-[0-9]+\.[0-9]+\.[0-9]+'
+
+jobs:
+  extract-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      arti_ver: ${{ steps.extract.outputs.arti_ver }}
+      lyrebird_ver: ${{ steps.extract.outputs.lyrebird_ver }}
+
+    steps:
+    - name: Extract versions
+      id: extract
+      run: |
+        echo "arti_ver=$(echo '${{ github.ref_name }}' | cut -d'-' -f2)" >> $GITHUB_OUTPUT
+        echo "lyrebird_ver=$(echo '${{ github.ref_name }}' | cut -d'-' -f4)" >> $GITHUB_OUTPUT
+
+  build-linux-arti:
+    runs-on: ubuntu-latest
+    container: rust:slim-trixie
+    needs: extract-versions
+
+    steps:
+    - name: Setup environment
+      run: |
+        echo "ARTI_VER=${{ needs.extract-versions.outputs.arti_ver }}" >> $GITHUB_ENV
+        echo "ARTI_URL=https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz" >> $GITHUB_ENV
+
+    - name: Setup output directory
+      run: mkdir -v /out
+
+    - name: Install dependencies
+      run: |
+        apt-get update -y
+        apt-get install -y pkg-config libssl-dev libsqlite3-dev curl
+
+    - name: Download and build
+      run: |
+        curl -LO "$ARTI_URL"
+        tar xvf arti-arti-v$ARTI_VER.tar.gz
+        cd arti-arti-v$ARTI_VER
+        cargo build -p arti --locked --release
+        strip -sv target/release/arti
+        cp -v target/release/arti /out
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: arti-linux
+        path: /out/arti
+
+  build-linux-lyrebird:
+    runs-on: ubuntu-latest
+    container: golang:trixie
+    needs: extract-versions
+
+    steps:
+    - name: Setup environment
+      run: |
+        echo "LYREBIRD_VER=${{ needs.extract-versions.outputs.lyrebird_ver }}" >> $GITHUB_ENV
+        echo "LYREBIRD_URL=https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz" >> $GITHUB_ENV
+
+    - name: Setup output directory
+      run: mkdir -v /out
+
+    - name: Download and build
+      run: |
+        git config --global --add safe.directory '*'
+        curl -LO "$LYREBIRD_URL"
+        tar xvf lyrebird-lyrebird-$LYREBIRD_VER.tar.gz
+        cd lyrebird-lyrebird-$LYREBIRD_VER
+        CGO_ENABLED=1 go build -ldflags="-X main.lyrebirdVersion=$LYREBIRD_VER -w -s" -v -o lyrebird ./cmd/lyrebird
+        cp -v lyrebird /out
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lyrebird-linux
+        path: /out/lyrebird
+
+  build-windows-arti:
+    runs-on: ubuntu-latest
+    container: rust:slim-trixie
+    needs: extract-versions
+
+    steps:
+    - name: Setup environment
+      run: |
+        echo "ARTI_VER=${{ needs.extract-versions.outputs.arti_ver }}" >> $GITHUB_ENV
+        echo "ARTI_URL=https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz" >> $GITHUB_ENV
+
+    - name: Setup output directory
+      run: mkdir -v /out
+
+    - name: Install dependencies
+      run: |
+        apt-get update -y
+        apt-get install -y mingw-w64 pkg-config libssl-dev libsqlite3-dev curl
+        rustup target add x86_64-pc-windows-gnu
+
+    - name: Download and build
+      run: |
+        curl -LO "$ARTI_URL"
+        tar xvf arti-arti-v$ARTI_VER.tar.gz
+        cd arti-arti-v$ARTI_VER
+        cargo build -p arti --locked --release --target x86_64-pc-windows-gnu --features static
+        strip -sv target/x86_64-pc-windows-gnu/release/arti.exe
+        cp -v target/x86_64-pc-windows-gnu/release/arti.exe /out
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: arti-windows
+        path: /out/arti.exe
+
+  build-windows-lyrebird:
+    runs-on: ubuntu-latest
+    container: golang:trixie
+    needs: extract-versions
+
+    steps:
+    - name: Setup environment
+      run: |
+        echo "LYREBIRD_VER=${{ needs.extract-versions.outputs.lyrebird_ver }}" >> $GITHUB_ENV
+        echo "LYREBIRD_URL=https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz" >> $GITHUB_ENV
+
+    - name: Setup output directory
+      run: mkdir -v /out
+
+    - name: Download and build
+      run: |
+        git config --global --add safe.directory '*'
+        curl -LO "$LYREBIRD_URL"
+        tar xvf lyrebird-lyrebird-$LYREBIRD_VER.tar.gz
+        cd lyrebird-lyrebird-$LYREBIRD_VER
+        GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=$LYREBIRD_VER -w -s" -v -o lyrebird.exe ./cmd/lyrebird
+        cp -v lyrebird.exe /out
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lyrebird-windows
+        path: /out/lyrebird.exe
+
+  release:
+    runs-on: ubuntu-latest
+    container: debian:trixie-slim
+    needs: [build-linux-arti, build-linux-lyrebird, build-windows-arti, build-windows-lyrebird]
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v5
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v5
+      with:
+        path: artifacts
+
+    - name: Setup directories
+      run: |
+        mkdir -v dist
+        mkdir -vp linux/arti
+        mkdir -vp windows/arti
+
+    - name: Install packaging tools
+      run: apt-get update -y && apt-get install -y zip
+
+    - name: Create Linux distribution
+      run: |
+        cp -v artifacts/arti-linux/arti linux/arti
+        cp -v artifacts/lyrebird-linux/lyrebird linux/arti
+
+        chmod -v 755 linux/arti/arti
+        chmod -v 755 linux/arti/lyrebird
+
+        cp -v resources/include/arti-linux.toml linux/arti/arti.toml
+        cp -v resources/include/start-arti linux/arti
+        cp -v resources/arti-example.toml linux/arti
+
+        cd linux
+        tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
+        cp -v arti-linux.tar.gz ../dist
+
+    - name: Create Windows distribution
+      run: |
+        cp -v artifacts/arti-windows/arti.exe windows/arti
+        cp -v artifacts/lyrebird-windows/lyrebird.exe windows/arti
+
+        chmod -v 755 windows/arti/arti.exe
+        chmod -v 755 windows/arti/lyrebird.exe
+
+        cp -v resources/include/arti-windows.toml windows/arti/arti.toml
+        cp -v resources/include/start-arti.bat windows/arti
+        cp -v resources/arti-example.toml windows/arti
+
+        cd windows
+        zip -Xr arti-windows.zip arti
+        cp -v arti-windows.zip ../dist
+
+    - name: Upload distribution artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: distributions
+        path: dist
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: |
+          dist/arti-linux.tar.gz
+          dist/arti-windows.zip

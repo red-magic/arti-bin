@@ -1,0 +1,72 @@
+#!/bin/bash
+
+set -euo pipefail
+
+arti_ver="1.5.0"
+lyrebird_ver="0.6.1"
+
+export user_name="arti"
+export bin_dir="/usr/bin"
+export config_dir="/etc/arti"
+export doc_dir="/usr/share/doc/arti"
+export service_dir="/usr/lib/systemd/system"
+export home_dir="/var/lib/arti"
+
+arti_download() {
+    if grep -q "${user_name}" /etc/passwd; then
+        printf "Arti is already installed\n"
+        exit 1
+    fi
+
+    curl -fLO "https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-linux.tar.gz"
+    tar xvf arti-linux.tar.gz
+}
+
+arti_install() {
+    install -vm 755 arti/arti -t "${bin_dir}"
+    install -vm 755 arti/lyrebird -t "${bin_dir}"
+
+    install -vDm 644 resources/arti.toml -t "${config_dir}"
+    install -vDm 644 resources/arti-example.toml -t "${doc_dir}"
+
+    mkdir -v "${home_dir}"
+    chmod -v 700 "${home_dir}"
+    useradd -M -r -s "$(command -v nologin)" -d "${home_dir}" -c "Arti Tor Service" "${user_name}"
+    chown -v "${user_name}":"${user_name}" "${home_dir}"
+
+    if [[ -x "$(command -v systemctl)" ]]; then
+        install -vm 644 resources/arti.service -t "${service_dir}"
+        printf "\nRun \"systemctl start arti.service\' to start Arti\n"
+        printf "Bridges can be changed in /etc/arti/arti.toml\n\n"
+    fi
+}
+
+arti_remove() {
+    if ! grep -q "${user_name}" /etc/passwd; then
+        printf "Arti isn't installed\n"
+        exit 1
+    elif [[ -n "$(pgrep -u ${user_name})" ]]; then
+        printf "Arti is still running, stop it first\n"
+        exit 1
+    fi
+
+    userdel -r "${user_name}" &> /dev/null
+
+    rm -vf "${bin_dir}/arti"
+    rm -vf "${bin_dir}/lyrebird"
+
+    rm -vrf "${config_dir}"
+    rm -vrf "${doc_dir}"
+
+    [[ -x "$(command -v systemctl)" ]] && rm -vf "${service_dir}/arti.service"
+}
+
+case "${1:-}" in
+    "remove")
+        sudo -E bash -c "$(declare -f arti_remove) && arti_remove"
+        ;;
+    "")
+        arti_download
+        sudo -E bash -c "$(declare -f arti_install) && arti_install"
+        ;;
+esac

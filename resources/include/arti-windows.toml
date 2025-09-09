@@ -1,0 +1,26 @@
+[bridges]
+enabled = "auto"
+
+bridges = '''
+# Default snowflake bridges
+#Bridge snowflake 192.0.2.3:80 2B280B23E1107BB62ABFC40DDCC8824814F80A72 fingerprint=2B280B23E1107BB62ABFC40DDCC8824814F80A72 url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.antisip.com:3478,stun:stun.epygi.com:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.mixvoip.com:3478,stun:stun.nextcloud.com:3478,stun:stun.bethesda.net:3478,stun:stun.nextcloud.com:443 utls-imitate=hellorandomizedalpn
+#Bridge snowflake 192.0.2.4:80 8838024498816A039FCBBAB14E6F40A0843051FA fingerprint=8838024498816A039FCBBAB14E6F40A0843051FA url=https://1098762253.rsc.cdn77.org/ fronts=www.cdn77.com,www.phpmyadmin.net ice=stun:stun.antisip.com:3478,stun:stun.epygi.com:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.mixvoip.com:3478,stun:stun.nextcloud.com:3478,stun:stun.bethesda.net:3478,stun:stun.nextcloud.com:443 utls-imitate=hellorandomizedalpn
+
+# An example of obfs4 bridges
+#Bridge obfs4 176.169.236.210:4431 F829D395093B4469808CE7A660AD33AC391FB64A cert=CGZxQnDVoqNLSyERUV5Wf1AklsRCwwSbLbeWjS7Aea6weFwQceg6XnEiXtKEdvWOxm1dMw iat-mode=0
+#Bridge obfs4 185.177.207.57:13630 A3D55AA6178E80AE486B6DAEAFBA5AB79B29B399 cert=p9L6+25s8bnfkye1ZxFeAE4mAGY7DH4Gaj7dxngIIzP9BtqrHHwZXdjMK0RVIQ34C7aqZw iat-mode=2
+
+# Regular relays
+#Bridge 146.19.254.163:53 E9D665DF29CFC13BBFD7E0D8ADB66D3C78B24FB4
+#Bridge 82.207.215.172:9004 D6D9673102DF1435C1A66F4C98E68B56F19216F7
+'''
+
+[[bridges.transports]]
+protocols = ["snowflake", "obfs4"]
+path = "lyrebird.exe"
+arguments = []
+run_on_startup = false
+
+[storage]
+cache_dir = "cache"
+state_dir = "state"

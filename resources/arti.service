@@ -1,0 +1,12 @@
+[Unit]
+Description=Arti Tor Service
+After=network.target
+
+[Service]
+Type=simple
+User=arti
+ExecStart=/usr/bin/arti proxy -c /etc/arti/arti.toml
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

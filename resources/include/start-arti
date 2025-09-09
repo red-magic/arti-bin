@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./arti proxy -c arti.toml
