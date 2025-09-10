@@ -4,7 +4,7 @@ set -euo pipefail
 
 container_arti="rust:slim-trixie"
 container_lyrebird="golang:trixie"
-container_arcs="debian:trixie-slim"
+container_arc="debian:trixie-slim"
 
 arti_ver="1.5.0"
 lyrebird_ver="0.6.1"
@@ -18,8 +18,8 @@ build_arti_linux() {
     apt-get update -y
     apt-get install -y pkg-config libssl-dev libsqlite3-dev curl
 
-    if ! curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${arti_url}"; then
-        curl --connect-timeout 10 -LO "${arti_url}"
+    if ! curl --connect-timeout 10 -LO "${arti_url}"; then
+        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${arti_url}"
     fi
 
     tar xvf arti-arti-v${arti_ver}.tar.gz
@@ -34,8 +34,8 @@ build_arti_linux() {
 build_lyrebird_linux() {
     set -euo pipefail
 
-    if ! curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"; then
-        curl --connect-timeout 10 -LO "${lyrebird_url}"
+    if ! curl --connect-timeout 10 -LO "${lyrebird_url}"; then
+        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"
     fi
 
     tar xvf lyrebird-lyrebird-${lyrebird_ver}.tar.gz
@@ -53,8 +53,8 @@ build_arti_windows() {
     apt-get install -y mingw-w64 pkg-config libssl-dev libsqlite3-dev curl
     rustup target add x86_64-pc-windows-gnu
 
-    if ! curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${arti_url}"; then
-        curl --connect-timeout 10 -LO "${arti_url}"
+    if ! curl --connect-timeout 10 -LO "${arti_url}"; then
+        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${arti_url}"
     fi
 
     tar xvf arti-arti-v${arti_ver}.tar.gz
@@ -69,8 +69,8 @@ build_arti_windows() {
 build_lyrebird_windows() {
     set -euo pipefail
 
-    if ! curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"; then
-        curl --connect-timeout 10 -LO "${lyrebird_url}"
+    if ! curl --connect-timeout 10 -LO "${lyrebird_url}"; then
+        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"
     fi
 
     tar xvf lyrebird-lyrebird-${lyrebird_ver}.tar.gz
@@ -81,14 +81,10 @@ build_lyrebird_windows() {
     cp -v lyrebird.exe /out/release/windows
 }
 
-build_arcs() {
+build_arc_linux() {
     set -euo pipefail
 
-    apt-get update -y
-    apt-get install -y zip
-
     mkdir -vp linux/arti
-    mkdir -vp windows/arti
 
     cp -vf /out/release/linux/arti linux/arti
     cp -vf /out/release/linux/lyrebird linux/arti
@@ -96,27 +92,44 @@ build_arcs() {
     cp -vf /out/resources/include/start-arti linux/arti
     cp -vf /out/resources/arti-example.toml linux/arti
 
+    cd linux
+    tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
+    cp -vf arti-linux.tar.gz /out/release
+}
+
+build_arc_windows() {
+    set -euo pipefail
+
+    apt-get update -y
+    apt-get install -y zip
+
+    mkdir -vp windows/arti
+
     cp -vf /out/release/windows/arti.exe windows/arti
     cp -vf /out/release/windows/lyrebird.exe windows/arti
     cp -vf /out/resources/include/arti-windows.toml windows/arti/arti.toml
     cp -vf /out/resources/include/start-arti.bat windows/arti
     cp -vf /out/resources/arti-example.toml windows/arti
 
-    cd linux
-    tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
-    cp -vf arti-linux.tar.gz /out/release
-
-    cd ../windows
+    cd windows
     zip -Xr arti-windows.zip arti
     cp -vf arti-windows.zip /out/release
 }
 
-mkdir -vp release/{linux,windows}
-
-docker run --rm --env arti_ver="${arti_ver}" --env arti_url="${arti_url}" --network=host -v "$(pwd)":/out -w /build "${container_arti}" bash -c "$(declare -f build_arti_linux) && build_arti_linux"
-docker run --rm --env lyrebird_ver="${lyrebird_ver}" --env lyrebird_url="${lyrebird_url}" --network=host -v "$(pwd)":/out -w /build "${container_lyrebird}" bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
-
-docker run --rm --env arti_ver="${arti_ver}" --env arti_url="${arti_url}" --network=host -v "$(pwd)":/out -w /build "${container_arti}" bash -c "$(declare -f build_arti_windows) && build_arti_windows"
-docker run --rm --env lyrebird_ver="${lyrebird_ver}" --env lyrebird_url="${lyrebird_url}" --network=host -v "$(pwd)":/out -w /build "${container_lyrebird}" bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
-
-docker run --rm -v "$(pwd)":/out -w /build "${container_arcs}" bash -c "$(declare -f build_arcs) && build_arcs"
+case "${1:-}" in
+    "linux")
+        mkdir -vp release/linux
+        docker run --rm --env arti_ver="${arti_ver}" --env arti_url="${arti_url}" --network=host -v "$(pwd)":/out -w /build "${container_arti}" bash -c "$(declare -f build_arti_linux) && build_arti_linux"
+        docker run --rm --env lyrebird_ver="${lyrebird_ver}" --env lyrebird_url="${lyrebird_url}" --network=host -v "$(pwd)":/out -w /build "${container_lyrebird}" bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
+        docker run --rm -v "$(pwd)":/out -w /build "${container_arc}" bash -c "$(declare -f build_arc_linux) && build_arc_linux"
+        ;;
+    "windows")
+        mkdir -vp release/windows
+        docker run --rm --env arti_ver="${arti_ver}" --env arti_url="${arti_url}" --network=host -v "$(pwd)":/out -w /build "${container_arti}" bash -c "$(declare -f build_arti_windows) && build_arti_windows"
+        docker run --rm --env lyrebird_ver="${lyrebird_ver}" --env lyrebird_url="${lyrebird_url}" --network=host -v "$(pwd)":/out -w /build "${container_lyrebird}" bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
+        docker run --rm -v "$(pwd)":/out -w /build "${container_arc}" bash -c "$(declare -f build_arc_windows) && build_arc_windows"
+        ;;
+    *)
+        printf "Usage: %s <linux | windows>\n" "$(basename "${0}")"
+        ;;
+esac
