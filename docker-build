@@ -119,16 +119,60 @@ build_arc_windows() {
 case "${1:-}" in
     "linux")
         mkdir -vp release/linux
-        docker run --rm --env arti_ver="${arti_ver}" --env arti_url="${arti_url}" --network=host -v "$(pwd)":/out -w /build "${container_arti}" bash -c "$(declare -f build_arti_linux) && build_arti_linux"
-        docker run --rm --env lyrebird_ver="${lyrebird_ver}" --env lyrebird_url="${lyrebird_url}" --network=host -v "$(pwd)":/out -w /build "${container_lyrebird}" bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
-        docker run --rm -v "$(pwd)":/out -w /build "${container_arc}" bash -c "$(declare -f build_arc_linux) && build_arc_linux"
+
+        docker run --rm                     \
+               --env arti_ver="${arti_ver}" \
+               --env arti_url="${arti_url}" \
+               --network=host               \
+               -v "$(pwd)":/out             \
+               -w /build                    \
+               "${container_arti}"          \
+               bash -c "$(declare -f build_arti_linux) && build_arti_linux"
+
+        docker run --rm                             \
+               --env lyrebird_ver="${lyrebird_ver}" \
+               --env lyrebird_url="${lyrebird_url}" \
+               --network=host                       \
+               -v "$(pwd)":/out                     \
+               -w /build                            \
+               "${container_lyrebird}"              \
+               bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
+
+        docker run --rm           \
+               -v "$(pwd)":/out   \
+               -w /build          \
+               "${container_arc}" \
+               bash -c "$(declare -f build_arc_linux) && build_arc_linux"
         ;;
+
     "windows")
         mkdir -vp release/windows
-        docker run --rm --env arti_ver="${arti_ver}" --env arti_url="${arti_url}" --network=host -v "$(pwd)":/out -w /build "${container_arti}" bash -c "$(declare -f build_arti_windows) && build_arti_windows"
-        docker run --rm --env lyrebird_ver="${lyrebird_ver}" --env lyrebird_url="${lyrebird_url}" --network=host -v "$(pwd)":/out -w /build "${container_lyrebird}" bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
-        docker run --rm -v "$(pwd)":/out -w /build "${container_arc}" bash -c "$(declare -f build_arc_windows) && build_arc_windows"
+
+        docker run --rm                     \
+               --env arti_ver="${arti_ver}" \
+               --env arti_url="${arti_url}" \
+               --network=host               \
+               -v "$(pwd)":/out             \
+               -w /build                    \
+               "${container_arti}"          \
+               bash -c "$(declare -f build_arti_windows) && build_arti_windows"
+
+        docker run --rm                             \
+               --env lyrebird_ver="${lyrebird_ver}" \
+               --env lyrebird_url="${lyrebird_url}" \
+               --network=host                       \
+               -v "$(pwd)":/out                     \
+               -w /build                            \
+               "${container_lyrebird}"              \
+               bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
+
+        docker run --rm           \
+               -v "$(pwd)":/out   \
+               -w /build          \
+               "${container_arc}" \
+               bash -c "$(declare -f build_arc_windows) && build_arc_windows"
         ;;
+
     *)
         printf "Usage: %s <linux | windows>\n" "$(basename "${0}")"
         ;;
