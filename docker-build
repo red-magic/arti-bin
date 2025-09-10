@@ -18,8 +18,8 @@ build_arti_linux() {
     apt-get update -y
     apt-get install -y pkg-config libssl-dev libsqlite3-dev curl
 
-    if ! curl --connect-timeout 10 -LO "${arti_url}"; then
-        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${arti_url}"
+    if ! curl --connect-timeout 5 -LO "${arti_url}"; then
+        curl --connect-timeout 10 --socks5 127.0.0.1:9150 -LO "${arti_url}"
     fi
 
     tar xvf arti-arti-v${arti_ver}.tar.gz
@@ -34,8 +34,8 @@ build_arti_linux() {
 build_lyrebird_linux() {
     set -euo pipefail
 
-    if ! curl --connect-timeout 10 -LO "${lyrebird_url}"; then
-        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"
+    if ! curl --connect-timeout 5 -LO "${lyrebird_url}"; then
+        curl --connect-timeout 10 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"
     fi
 
     tar xvf lyrebird-lyrebird-${lyrebird_ver}.tar.gz
@@ -53,8 +53,8 @@ build_arti_windows() {
     apt-get install -y mingw-w64 pkg-config libssl-dev libsqlite3-dev curl
     rustup target add x86_64-pc-windows-gnu
 
-    if ! curl --connect-timeout 10 -LO "${arti_url}"; then
-        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${arti_url}"
+    if ! curl --connect-timeout 5 -LO "${arti_url}"; then
+        curl --connect-timeout 10 --socks5 127.0.0.1:9150 -LO "${arti_url}"
     fi
 
     tar xvf arti-arti-v${arti_ver}.tar.gz
@@ -69,8 +69,8 @@ build_arti_windows() {
 build_lyrebird_windows() {
     set -euo pipefail
 
-    if ! curl --connect-timeout 10 -LO "${lyrebird_url}"; then
-        curl --connect-timeout 20 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"
+    if ! curl --connect-timeout 5 -LO "${lyrebird_url}"; then
+        curl --connect-timeout 10 --socks5 127.0.0.1:9150 -LO "${lyrebird_url}"
     fi
 
     tar xvf lyrebird-lyrebird-${lyrebird_ver}.tar.gz
