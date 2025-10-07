@@ -46,12 +46,15 @@ jobs:
         cargo build -p arti --locked --release
         strip -sv target/release/arti
         cp -v target/release/arti /out
+        cp -v crates/arti/src/arti-example-config.toml /out/arti-example.toml
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: arti-linux
-        path: /out/arti
+        path: |
+          /out/arti
+          /out/arti-example.toml
 
   build-linux-lyrebird:
     runs-on: ubuntu-latest
@@ -110,12 +113,15 @@ jobs:
         cargo build -p arti --locked --release --target x86_64-pc-windows-gnu --features static
         strip -sv target/x86_64-pc-windows-gnu/release/arti.exe
         cp -v target/x86_64-pc-windows-gnu/release/arti.exe /out
+        cp -v crates/arti/src/arti-example-config.toml /out/arti-example.toml
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: arti-windows
-        path: /out/arti.exe
+        path: |
+          /out/arti.exe
+          /out/arti-example.toml
 
   build-windows-lyrebird:
     runs-on: ubuntu-latest
@@ -174,6 +180,7 @@ jobs:
     - name: Create Linux distribution
       run: |
         cp -v artifacts/arti-linux/arti linux/arti
+        cp -v artifacts/arti-linux/arti-example.toml linux/arti
         cp -v artifacts/lyrebird-linux/lyrebird linux/arti
 
         chmod -v 755 linux/arti/arti
@@ -181,7 +188,6 @@ jobs:
 
         cp -v resources/include/arti-linux.toml linux/arti/arti.toml
         cp -v resources/include/start-arti linux/arti
-        cp -v resources/arti-example.toml linux/arti
 
         cd linux
         tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
@@ -190,6 +196,7 @@ jobs:
     - name: Create Windows distribution
       run: |
         cp -v artifacts/arti-windows/arti.exe windows/arti
+        cp -v artifacts/arti-windows/arti-example.toml windows/arti
         cp -v artifacts/lyrebird-windows/lyrebird.exe windows/arti
 
         chmod -v 755 windows/arti/arti.exe
@@ -197,7 +204,6 @@ jobs:
 
         cp -v resources/include/arti-windows.toml windows/arti/arti.toml
         cp -v resources/include/start-arti.bat windows/arti
-        cp -v resources/arti-example.toml windows/arti
 
         cd windows
         zip -Xr arti-windows.zip arti

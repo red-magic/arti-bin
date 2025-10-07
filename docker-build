@@ -6,7 +6,7 @@ container_arti="rust:slim-trixie"
 container_lyrebird="golang:trixie"
 container_arc="debian:trixie-slim"
 
-arti_ver="1.5.0"
+arti_ver="1.6.0"
 lyrebird_ver="0.6.1"
 
 arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver}/arti-arti-v${arti_ver}.tar.gz"
@@ -29,6 +29,7 @@ build_arti_linux() {
     strip -sv target/release/arti
 
     cp -v target/release/arti /out/release/linux
+    cp -v crates/arti/src/arti-example-config.toml /out/release/linux/arti-example.toml
 }
 
 build_lyrebird_linux() {
@@ -64,6 +65,7 @@ build_arti_windows() {
     strip -sv target/x86_64-pc-windows-gnu/release/arti.exe
 
     cp -v target/x86_64-pc-windows-gnu/release/arti.exe /out/release/windows
+    cp -v crates/arti/src/arti-example-config.toml /out/release/windows/arti-example.toml
 }
 
 build_lyrebird_windows() {
@@ -88,9 +90,9 @@ build_arc_linux() {
 
     cp -vf /out/release/linux/arti linux/arti
     cp -vf /out/release/linux/lyrebird linux/arti
+    cp -vf /out/release/linux/arti-example.toml linux/arti
     cp -vf /out/resources/include/arti-linux.toml linux/arti/arti.toml
     cp -vf /out/resources/include/start-arti linux/arti
-    cp -vf /out/resources/arti-example.toml linux/arti
 
     cd linux
     tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
@@ -107,9 +109,9 @@ build_arc_windows() {
 
     cp -vf /out/release/windows/arti.exe windows/arti
     cp -vf /out/release/windows/lyrebird.exe windows/arti
+    cp -vf /out/release/windows/arti-example.toml windows/arti
     cp -vf /out/resources/include/arti-windows.toml windows/arti/arti.toml
     cp -vf /out/resources/include/start-arti.bat windows/arti
-    cp -vf /out/resources/arti-example.toml windows/arti
 
     cd windows
     zip -Xr arti-windows.zip arti

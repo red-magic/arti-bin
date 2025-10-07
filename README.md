@@ -24,5 +24,5 @@ Alternatively, you can download the release archive to run it as a regular user.
 
 | Binary | Version |
 | --- | --- |
-| `arti` | [1.5.0](https://gitlab.torproject.org/tpo/core/arti/-/tags/arti-v1.5.0) |
+| `arti` | [1.6.0](https://gitlab.torproject.org/tpo/core/arti/-/tags/arti-v1.6.0) |
 | `lyrebird` | [0.6.1](https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/tags/lyrebird-0.6.1) |

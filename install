@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-arti_ver="1.5.0"
+arti_ver="1.6.0"
 lyrebird_ver="0.6.1"
 
 export user_name="arti"
@@ -27,7 +27,7 @@ arti_install() {
     install -vm 755 arti/lyrebird -t "${bin_dir}"
 
     install -vDm 644 resources/arti.toml -t "${config_dir}"
-    install -vDm 644 resources/arti-example.toml -t "${doc_dir}"
+    install -vDm 644 arti/arti-example.toml -t "${doc_dir}"
 
     mkdir -v "${home_dir}"
     chmod -v 700 "${home_dir}"
