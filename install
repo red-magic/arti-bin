@@ -3,7 +3,7 @@
 set -euo pipefail
 
 arti_ver="1.6.0"
-lyrebird_ver="0.6.1"
+lyrebird_ver="0.6.2"
 
 export user_name="arti"
 export bin_dir="/usr/bin"
