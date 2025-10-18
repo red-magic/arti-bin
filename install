@@ -31,7 +31,7 @@ arti_install() {
 
     mkdir -v "${home_dir}"
     chmod -v 700 "${home_dir}"
-    useradd -M -r -s "$(command -v nologin)" -d "${home_dir}" -c "Arti Tor Service" "${user_name}"
+    useradd -M -r -s "$(command -v nologin)" -d "${home_dir}" -c "Arti Daemon" "${user_name}"
     chown -v "${user_name}":"${user_name}" "${home_dir}"
 
     if [[ -x "$(command -v systemctl)" ]]; then
