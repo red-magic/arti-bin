@@ -14,11 +14,9 @@ Alternatively, you can download the release archive to run it as a regular user.
 
 
 > [!NOTE]
-> The default listening port is `127.0.0.1:9150`.
->
-> Uncomment snowflake or obfs4 bridges in `/etc/arti/arti.toml` to use them.
->
-> If you plan to use `arti` with obfs4 bridges, you need to manually add them.
+> - The default listening port is `127.0.0.1:9150`.
+> - Uncomment snowflake or obfs4 bridges in `/etc/arti/arti.toml` to use them.
+> - If you plan to use `arti` with obfs4 bridges, you need to manually add them.
 
 ## Programs
 
