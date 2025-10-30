@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-arti_ver="1.6.0"
+arti_ver="1.7.0"
 lyrebird_ver="0.6.2"
 
 export user_name="arti"
