@@ -49,7 +49,7 @@ jobs:
         cp -v crates/arti/src/arti-example-config.toml /out/arti-example.toml
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: arti-linux
         path: |
@@ -80,7 +80,7 @@ jobs:
         cp -v lyrebird /out
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: lyrebird-linux
         path: /out/lyrebird
@@ -116,7 +116,7 @@ jobs:
         cp -v crates/arti/src/arti-example-config.toml /out/arti-example.toml
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: arti-windows
         path: |
@@ -147,7 +147,7 @@ jobs:
         cp -v lyrebird.exe /out
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: lyrebird-windows
         path: /out/lyrebird.exe
@@ -170,55 +170,55 @@ jobs:
 
     - name: Setup directories
       run: |
-        mkdir -v dist
-        mkdir -vp linux/arti
-        mkdir -vp windows/arti
+        mkdir -v /dist
+        mkdir -vp /linux/arti
+        mkdir -vp /windows/arti
 
     - name: Install packaging tools
       run: apt-get update -y && apt-get install -y zip
 
     - name: Create Linux distribution
       run: |
-        cp -v artifacts/arti-linux/arti linux/arti
-        cp -v artifacts/arti-linux/arti-example.toml linux/arti
-        cp -v artifacts/lyrebird-linux/lyrebird linux/arti
+        cp -v artifacts/arti-linux/arti /linux/arti
+        cp -v artifacts/arti-linux/arti-example.toml /linux/arti
+        cp -v artifacts/lyrebird-linux/lyrebird /linux/arti
 
-        chmod -v 755 linux/arti/arti
-        chmod -v 755 linux/arti/lyrebird
+        chmod -v 755 /linux/arti/arti
+        chmod -v 755 /linux/arti/lyrebird
 
-        cp -v resources/include/arti-linux.toml linux/arti/arti.toml
-        cp -v resources/include/start-arti linux/arti
+        cp -v resources/include/arti-linux.toml /linux/arti/arti.toml
+        cp -v resources/include/start-arti /linux/arti
 
-        cd linux
+        cd /linux
         tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
-        cp -v arti-linux.tar.gz ../dist
+        cp -v arti-linux.tar.gz /dist
 
     - name: Create Windows distribution
       run: |
-        cp -v artifacts/arti-windows/arti.exe windows/arti
-        cp -v artifacts/arti-windows/arti-example.toml windows/arti
-        cp -v artifacts/lyrebird-windows/lyrebird.exe windows/arti
+        cp -v artifacts/arti-windows/arti.exe /windows/arti
+        cp -v artifacts/arti-windows/arti-example.toml /windows/arti
+        cp -v artifacts/lyrebird-windows/lyrebird.exe /windows/arti
 
-        chmod -v 755 windows/arti/arti.exe
-        chmod -v 755 windows/arti/lyrebird.exe
+        chmod -v 755 /windows/arti/arti.exe
+        chmod -v 755 /windows/arti/lyrebird.exe
 
-        cp -v resources/include/arti-windows.toml windows/arti/arti.toml
-        cp -v resources/include/start-arti.bat windows/arti
+        cp -v resources/include/arti-windows.toml /windows/arti/arti.toml
+        cp -v resources/include/start-arti.bat /windows/arti
 
-        cd windows
+        cd /windows
         zip -Xr arti-windows.zip arti
-        cp -v arti-windows.zip ../dist
+        cp -v arti-windows.zip /dist
 
     - name: Upload distribution artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: distributions
-        path: dist
+        path: /dist
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         files: |
-          dist/arti-linux.tar.gz
-          dist/arti-windows.zip
+          /dist/arti-linux.tar.gz
+          /dist/arti-windows.zip
