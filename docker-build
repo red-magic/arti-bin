@@ -83,15 +83,10 @@ build_lyrebird_windows() {
 build_arc_linux() {
     set -euo pipefail
 
-    mkdir -vp linux/arti
+    cp -vf /out/resources/include/arti-linux.toml /out/release/linux/arti.toml
+    cp -vf /out/resources/include/start-arti /out/release/linux
+    cp -vrf /out/release/linux arti
 
-    cp -vf /out/release/linux/arti linux/arti
-    cp -vf /out/release/linux/lyrebird linux/arti
-    cp -vf /out/release/linux/arti-example.toml linux/arti
-    cp -vf /out/resources/include/arti-linux.toml linux/arti/arti.toml
-    cp -vf /out/resources/include/start-arti linux/arti
-
-    cd linux
     tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
     cp -vf arti-linux.tar.gz /out/release
 }
@@ -102,15 +97,10 @@ build_arc_windows() {
     apt-get update -y
     apt-get install -y zip
 
-    mkdir -vp windows/arti
+    cp -vf /out/resources/include/arti-windows.toml /out/release/windows/arti.toml
+    cp -vf /out/resources/include/start-arti.bat /out/release/windows
+    cp -vrf /out/release/windows arti
 
-    cp -vf /out/release/windows/arti.exe windows/arti
-    cp -vf /out/release/windows/lyrebird.exe windows/arti
-    cp -vf /out/release/windows/arti-example.toml windows/arti
-    cp -vf /out/resources/include/arti-windows.toml windows/arti/arti.toml
-    cp -vf /out/resources/include/start-arti.bat windows/arti
-
-    cd windows
     zip -Xr arti-windows.zip arti
     cp -vf arti-windows.zip /out/release
 }
