@@ -22,14 +22,9 @@ jobs:
 
   build-linux-arti:
     runs-on: ubuntu-latest
-    container: rust:slim-trixie
+    container: rust:trixie
     needs: extract-versions
     steps:
-      - name: Install dependencies
-        run: |
-          apt-get update -y
-          apt-get install -y pkg-config libssl-dev libsqlite3-dev curl
-
       - name: Download and build
         run: |
           curl -LO "https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz"
@@ -71,13 +66,13 @@ jobs:
 
   build-windows-arti:
     runs-on: ubuntu-latest
-    container: rust:slim-trixie
+    container: rust:trixie
     needs: extract-versions
     steps:
       - name: Install dependencies
         run: |
           apt-get update -y
-          apt-get install -y mingw-w64 pkg-config libssl-dev libsqlite3-dev curl
+          apt-get install -y mingw-w64
           rustup target add x86_64-pc-windows-gnu
 
       - name: Download and build

@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-container_arti="rust:slim-trixie"
+container_arti="rust:trixie"
 container_lyrebird="golang:trixie"
-container_arc="debian:trixie-slim"
+container_arc="debian:trixie"
 
 arti_ver="1.7.0"
 lyrebird_ver="0.6.2"
@@ -14,9 +14,6 @@ lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transp
 
 build_arti_linux() {
     set -euo pipefail
-
-    apt-get update -y
-    apt-get install -y pkg-config libssl-dev libsqlite3-dev curl
 
     if ! curl --connect-timeout 5 -LO "${arti_url}"; then
         curl --connect-timeout 10 --socks5 127.0.0.1:9150 -LO "${arti_url}"
@@ -51,7 +48,7 @@ build_arti_windows() {
     set -euo pipefail
 
     apt-get update -y
-    apt-get install -y mingw-w64 pkg-config libssl-dev libsqlite3-dev curl
+    apt-get install -y mingw-w64
     rustup target add x86_64-pc-windows-gnu
 
     if ! curl --connect-timeout 5 -LO "${arti_url}"; then
