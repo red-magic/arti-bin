@@ -12,7 +12,7 @@ lyrebird_ver="0.6.2"
 arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver}/arti-arti-v${arti_ver}.tar.gz"
 lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${lyrebird_ver}/lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
 
-build_arti_linux() {
+build_linux_arti() {
     set -euo pipefail
 
     if ! curl --connect-timeout 5 -LO "${arti_url}"; then
@@ -29,7 +29,7 @@ build_arti_linux() {
     cp -v crates/arti/src/arti-example-config.toml /out/release/linux/arti-example.toml
 }
 
-build_lyrebird_linux() {
+build_linux_lyrebird() {
     set -euo pipefail
 
     if ! curl --connect-timeout 5 -LO "${lyrebird_url}"; then
@@ -44,7 +44,7 @@ build_lyrebird_linux() {
     cp -v lyrebird /out/release/linux
 }
 
-build_arti_windows() {
+build_windows_arti() {
     set -euo pipefail
 
     apt-get update -y
@@ -65,7 +65,7 @@ build_arti_windows() {
     cp -v crates/arti/src/arti-example-config.toml /out/release/windows/arti-example.toml
 }
 
-build_lyrebird_windows() {
+build_windows_lyrebird() {
     set -euo pipefail
 
     if ! curl --connect-timeout 5 -LO "${lyrebird_url}"; then
@@ -80,7 +80,7 @@ build_lyrebird_windows() {
     cp -v lyrebird.exe /out/release/windows
 }
 
-build_arc_linux() {
+build_linux_arc() {
     set -euo pipefail
 
     cp -vf /out/resources/include/arti-linux.toml /out/release/linux/arti.toml
@@ -91,7 +91,7 @@ build_arc_linux() {
     cp -vf arti-linux.tar.gz /out/release
 }
 
-build_arc_windows() {
+build_windows_arc() {
     set -euo pipefail
 
     apt-get update -y
@@ -116,7 +116,7 @@ case "${1:-}" in
                -v "$(pwd)":/out             \
                -w /build                    \
                "${container_arti}"          \
-               bash -c "$(declare -f build_arti_linux) && build_arti_linux"
+               bash -c "$(declare -f build_linux_arti) && build_linux_arti"
 
         docker run --rm                             \
                --env lyrebird_ver="${lyrebird_ver}" \
@@ -125,13 +125,13 @@ case "${1:-}" in
                -v "$(pwd)":/out                     \
                -w /build                            \
                "${container_lyrebird}"              \
-               bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
+               bash -c "$(declare -f build_linux_lyrebird) && build_linux_lyrebird"
 
         docker run --rm           \
                -v "$(pwd)":/out   \
                -w /build          \
                "${container_arc}" \
-               bash -c "$(declare -f build_arc_linux) && build_arc_linux"
+               bash -c "$(declare -f build_linux_arc) && build_linux_arc"
         ;;
 
     "windows")
@@ -144,7 +144,7 @@ case "${1:-}" in
                -v "$(pwd)":/out             \
                -w /build                    \
                "${container_arti}"          \
-               bash -c "$(declare -f build_arti_windows) && build_arti_windows"
+               bash -c "$(declare -f build_windows_arti) && build_windows_arti"
 
         docker run --rm                             \
                --env lyrebird_ver="${lyrebird_ver}" \
@@ -153,13 +153,13 @@ case "${1:-}" in
                -v "$(pwd)":/out                     \
                -w /build                            \
                "${container_lyrebird}"              \
-               bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
+               bash -c "$(declare -f build_windows_lyrebird) && build_windows_lyrebird"
 
         docker run --rm           \
                -v "$(pwd)":/out   \
                -w /build          \
                "${container_arc}" \
-               bash -c "$(declare -f build_arc_windows) && build_arc_windows"
+               bash -c "$(declare -f build_windows_arc) && build_windows_arc"
         ;;
 
     *)
