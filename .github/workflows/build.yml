@@ -145,7 +145,7 @@ jobs:
           chmod 755 linux/arti/lyrebird
           chmod 755 linux/arti/start-arti
           cd linux
-          tar czf ../dist/arti-linux.tar.gz arti --owner=0 --group=0
+          tar czf ../dist/arti-linux.tar.gz arti --owner=0 --group=0 --numeric-owner
 
       - name: Create Windows distribution
         run: |
