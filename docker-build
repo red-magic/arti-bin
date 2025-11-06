@@ -113,7 +113,7 @@ case "${1:-}" in
                --env arti_ver="${arti_ver}" \
                --env arti_url="${arti_url}" \
                --network=host               \
-               -v "$(pwd)":/out             \
+               -v "$(pwd)":/out:Z           \
                -w /build                    \
                "${container_arti}"          \
                bash -c "$(declare -f build_linux_arti) && build_linux_arti"
@@ -122,13 +122,13 @@ case "${1:-}" in
                --env lyrebird_ver="${lyrebird_ver}" \
                --env lyrebird_url="${lyrebird_url}" \
                --network=host                       \
-               -v "$(pwd)":/out                     \
+               -v "$(pwd)":/out:Z                   \
                -w /build                            \
                "${container_lyrebird}"              \
                bash -c "$(declare -f build_linux_lyrebird) && build_linux_lyrebird"
 
         docker run --rm           \
-               -v "$(pwd)":/out   \
+               -v "$(pwd)":/out:Z \
                -w /build          \
                "${container_arc}" \
                bash -c "$(declare -f build_linux_arc) && build_linux_arc"
@@ -141,7 +141,7 @@ case "${1:-}" in
                --env arti_ver="${arti_ver}" \
                --env arti_url="${arti_url}" \
                --network=host               \
-               -v "$(pwd)":/out             \
+               -v "$(pwd)":/out:Z           \
                -w /build                    \
                "${container_arti}"          \
                bash -c "$(declare -f build_windows_arti) && build_windows_arti"
@@ -150,13 +150,13 @@ case "${1:-}" in
                --env lyrebird_ver="${lyrebird_ver}" \
                --env lyrebird_url="${lyrebird_url}" \
                --network=host                       \
-               -v "$(pwd)":/out                     \
+               -v "$(pwd)":/out:Z                   \
                -w /build                            \
                "${container_lyrebird}"              \
                bash -c "$(declare -f build_windows_lyrebird) && build_windows_lyrebird"
 
         docker run --rm           \
-               -v "$(pwd)":/out   \
+               -v "$(pwd)":/out:Z \
                -w /build          \
                "${container_arc}" \
                bash -c "$(declare -f build_windows_arc) && build_windows_arc"
