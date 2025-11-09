@@ -44,7 +44,7 @@ arti_install() {
 
     if [[ -x "$(command -v systemctl)" ]]; then
         install -vm 644 resources/arti.service -t "${service_dir}"
-        printf "\nRun \"systemctl enable arti.service\' to start Arti on boot\n"
+        printf "\nRun \"systemctl enable arti.service\" to start Arti on boot\n"
         printf "Bridges can be changed in /etc/arti/arti.toml\n\n"
     fi
 }
