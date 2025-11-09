@@ -13,6 +13,7 @@ config_dir="/etc/arti"
 doc_dir="/usr/share/doc/arti"
 service_dir="/usr/lib/systemd/system"
 home_dir="/var/lib/arti"
+tmp_dir="/tmp/arti"
 
 arti_download() {
     if grep -q "${user_name}" /etc/passwd; then
@@ -20,24 +21,26 @@ arti_download() {
         exit 1
     fi
 
-    [[ -f "/tmp/arti-linux.tar.gz" ]] && rm -vf /tmp/arti-linux.tar.gz
-    pushd /tmp
+    [[ -d "${tmp_dir}" ]] && rm -vrf "${tmp_dir}"
+    mkdir -v "${tmp_dir}"
+    pushd "${tmp_dir}"
+
     curl -fLO "https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-linux.tar.gz"
     tar xvf arti-linux.tar.gz
+
     popd
 }
 
 arti_install() {
-    install -vm 755 /tmp/arti/arti -t "${bin_dir}"
-    install -vm 755 /tmp/arti/lyrebird -t "${bin_dir}"
-
-    install -vDm 644 resources/arti.toml -t "${config_dir}"
-    install -vDm 644 /tmp/arti/arti-example.toml -t "${doc_dir}"
-
     mkdir -v "${home_dir}"
     chmod -v 700 "${home_dir}"
     useradd -M -r -s "$(command -v nologin)" -d "${home_dir}" -c "Arti Daemon" "${user_name}"
     chown -v "${user_name}":"${user_name}" "${home_dir}"
+
+    install -vm 755 "${tmp_dir}/arti/arti" -t "${bin_dir}"
+    install -vm 755 "${tmp_dir}/arti/lyrebird" -t "${bin_dir}"
+    install -vDm 644 "${tmp_dir}/arti/arti-example.toml" -t "${doc_dir}"
+    install -vDm 644 resources/arti.toml -t "${config_dir}"
 
     if [[ -x "$(command -v systemctl)" ]]; then
         install -vm 644 resources/arti.service -t "${service_dir}"
@@ -59,7 +62,6 @@ arti_remove() {
 
     rm -vf "${bin_dir}/arti"
     rm -vf "${bin_dir}/lyrebird"
-
     rm -vrf "${config_dir}"
     rm -vrf "${doc_dir}"
 
