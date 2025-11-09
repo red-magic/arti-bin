@@ -2,15 +2,17 @@
 
 set -euo pipefail
 
+[[ "$(id -u)" -ne 0 ]] && exec sudo "${0}" "${@}"
+
 arti_ver="1.7.0"
 lyrebird_ver="0.6.2"
 
-export user_name="arti"
-export bin_dir="/usr/bin"
-export config_dir="/etc/arti"
-export doc_dir="/usr/share/doc/arti"
-export service_dir="/usr/lib/systemd/system"
-export home_dir="/var/lib/arti"
+user_name="arti"
+bin_dir="/usr/bin"
+config_dir="/etc/arti"
+doc_dir="/usr/share/doc/arti"
+service_dir="/usr/lib/systemd/system"
+home_dir="/var/lib/arti"
 
 arti_download() {
     if grep -q "${user_name}" /etc/passwd; then
@@ -18,16 +20,19 @@ arti_download() {
         exit 1
     fi
 
+    [[ -f "/tmp/arti-linux.tar.gz" ]] && rm -vf /tmp/arti-linux.tar.gz
+    pushd /tmp
     curl -fLO "https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-linux.tar.gz"
     tar xvf arti-linux.tar.gz
+    popd
 }
 
 arti_install() {
-    install -vm 755 arti/arti -t "${bin_dir}"
-    install -vm 755 arti/lyrebird -t "${bin_dir}"
+    install -vm 755 /tmp/arti/arti -t "${bin_dir}"
+    install -vm 755 /tmp/arti/lyrebird -t "${bin_dir}"
 
     install -vDm 644 resources/arti.toml -t "${config_dir}"
-    install -vDm 644 arti/arti-example.toml -t "${doc_dir}"
+    install -vDm 644 /tmp/arti/arti-example.toml -t "${doc_dir}"
 
     mkdir -v "${home_dir}"
     chmod -v 700 "${home_dir}"
@@ -63,10 +68,10 @@ arti_remove() {
 
 case "${1:-}" in
     "remove")
-        sudo -E bash -c "$(declare -f arti_remove) && arti_remove"
+        arti_remove
         ;;
     "")
         arti_download
-        sudo -E bash -c "$(declare -f arti_install) && arti_install"
+        arti_install
         ;;
 esac
