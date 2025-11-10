@@ -53,7 +53,7 @@ arti_remove() {
     if ! grep -q "${user_name}" /etc/passwd; then
         printf "Arti isn't installed\n"
         exit 1
-    elif [[ -n "$(pgrep -u ${user_name})" ]]; then
+    elif [[ -n "$(pgrep -u "${user_name}")" ]]; then
         printf "Arti is still running, stop it first\n"
         exit 1
     fi
