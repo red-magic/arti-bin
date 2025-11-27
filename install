@@ -5,7 +5,7 @@ set -euo pipefail
 [[ "$(id -u)" -ne 0 ]] && exec sudo "${0}" "${@}"
 
 arti_ver="1.7.0"
-lyrebird_ver="0.6.2"
+lyrebird_ver="0.7.0"
 
 user_name="arti"
 bin_dir="/usr/bin"

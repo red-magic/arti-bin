@@ -7,7 +7,7 @@ container_lyrebird="golang:trixie"
 container_arc="debian:trixie"
 
 arti_ver="1.7.0"
-lyrebird_ver="0.6.2"
+lyrebird_ver="0.7.0"
 
 arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver}/arti-arti-v${arti_ver}.tar.gz"
 lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${lyrebird_ver}/lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
