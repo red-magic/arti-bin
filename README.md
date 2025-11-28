@@ -12,8 +12,7 @@ Run the systemd service to start `arti`:
 
 > [!IMPORTANT]
 > - The default listening port is `127.0.0.1:9150`.
-> - Uncomment snowflake or obfs4 bridges in `/etc/arti/arti.toml` to use them.
-> - If you plan to use `arti` with obfs4 bridges, you need to manually add them.
+> - Uncomment bridges in `/etc/arti/arti.toml` to use them.
 
 ## Standalone Packages
 
