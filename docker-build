@@ -6,7 +6,7 @@ container_arti="rust:trixie"
 container_lyrebird="golang:trixie"
 container_arc="debian:trixie"
 
-arti_ver="1.7.0"
+arti_ver="1.8.0"
 lyrebird_ver="0.7.0"
 
 arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver}/arti-arti-v${arti_ver}.tar.gz"
