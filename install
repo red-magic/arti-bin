@@ -39,7 +39,7 @@ arti_install() {
 
     install -vm 755 "${tmp_dir}/arti/arti" -t "${bin_dir}"
     install -vm 755 "${tmp_dir}/arti/lyrebird" -t "${bin_dir}"
-    install -vDm 644 "${tmp_dir}/arti/arti-example.toml" -t "${doc_dir}"
+    install -vDm 644 "${tmp_dir}/arti/arti-example-config.toml" -t "${doc_dir}"
     install -vDm 644 resources/arti.toml -t "${config_dir}"
 
     if [[ -x "$(command -v systemctl)" ]]; then
