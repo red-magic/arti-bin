@@ -34,7 +34,7 @@ jobs:
           strip -s target/release/arti
           mkdir /out
           cp target/release/arti /out
-          cp crates/arti/src/arti-example-config.toml /out/arti-example.toml
+          cp crates/arti/src/arti-example-config.toml /out
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v5
@@ -42,7 +42,7 @@ jobs:
           name: arti-linux
           path: |
             /out/arti
-            /out/arti-example.toml
+            /out/arti-example-config.toml
 
   build-linux-lyrebird:
     runs-on: ubuntu-latest
@@ -84,7 +84,7 @@ jobs:
           strip -s target/x86_64-pc-windows-gnu/release/arti.exe
           mkdir /out
           cp target/x86_64-pc-windows-gnu/release/arti.exe /out
-          cp crates/arti/src/arti-example-config.toml /out/arti-example.toml
+          cp crates/arti/src/arti-example-config.toml /out
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v5
@@ -92,7 +92,7 @@ jobs:
           name: arti-windows
           path: |
             /out/arti.exe
-            /out/arti-example.toml
+            /out/arti-example-config.toml
 
   build-windows-lyrebird:
     runs-on: ubuntu-latest
@@ -137,7 +137,7 @@ jobs:
       - name: Create Linux distribution
         run: |
           cp artifacts/arti-linux/arti linux/arti
-          cp artifacts/arti-linux/arti-example.toml linux/arti
+          cp artifacts/arti-linux/arti-example-config.toml linux/arti
           cp artifacts/lyrebird-linux/lyrebird linux/arti
           cp resources/include/arti-linux.toml linux/arti/arti.toml
           cp resources/include/start-arti linux/arti
@@ -150,7 +150,7 @@ jobs:
       - name: Create Windows distribution
         run: |
           cp artifacts/arti-windows/arti.exe windows/arti
-          cp artifacts/arti-windows/arti-example.toml windows/arti
+          cp artifacts/arti-windows/arti-example-config.toml windows/arti
           cp artifacts/lyrebird-windows/lyrebird.exe windows/arti
           cp resources/include/arti-windows.toml windows/arti/arti.toml
           cp resources/include/start-arti.bat windows/arti
