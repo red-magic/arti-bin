@@ -163,6 +163,6 @@ case "${1:-}" in
         ;;
 
     *)
-        printf "Usage: %s [linux | windows]\n" "$(basename "${0}")"
+        printf "Usage: %s <linux | windows>\n" "$(basename "${0}")"
         ;;
 esac
