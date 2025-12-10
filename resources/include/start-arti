@@ -1,3 +1,5 @@
 #!/bin/bash
 
-./arti proxy -c arti.toml
+cd "$(dirname "$0")" || exit 1
+
+exec ./arti proxy -c arti.toml
