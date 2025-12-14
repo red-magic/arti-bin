@@ -37,7 +37,7 @@ jobs:
           cp crates/arti/src/arti-example-config.toml /out
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: arti-linux
           path: |
@@ -59,7 +59,7 @@ jobs:
           cp lyrebird /out
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: lyrebird-linux
           path: /out/lyrebird
@@ -87,7 +87,7 @@ jobs:
           cp crates/arti/src/arti-example-config.toml /out
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: arti-windows
           path: |
@@ -109,7 +109,7 @@ jobs:
           cp lyrebird.exe /out
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: lyrebird-windows
           path: /out/lyrebird.exe
