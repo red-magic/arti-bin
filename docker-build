@@ -93,6 +93,19 @@ build_windows_arc() {
     cp -vf arti-windows.zip /out/release
 }
 
+print_help() {
+    printf "Usage: %s <linux | windows>\n" "$(basename "${0}")"
+}
+
+if [[ "${#}" -gt 1 ]]; then
+    printf "Only one argument is accepted\n" >&2
+    print_help
+    exit 1
+elif [[ "${#}" -eq 0 ]]; then
+    print_help
+    exit 0
+fi
+
 case "${1:-}" in
     "linux")
         mkdir -vp release/linux
@@ -151,6 +164,8 @@ case "${1:-}" in
         ;;
 
     *)
-        printf "Usage: %s <linux | windows>\n" "$(basename "${0}")"
+        printf "Invalid argument: %s\n" "${1}" >&2
+        print_help
+        exit 1
         ;;
 esac
