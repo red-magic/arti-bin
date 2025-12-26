@@ -17,7 +17,7 @@ tmp_dir="/tmp/arti"
 
 arti_download() {
     if grep -q "${user_name}" /etc/passwd; then
-        printf "Arti is already installed\n"
+        printf "Arti is already installed\n" >&2
         exit 1
     fi
 
@@ -53,10 +53,10 @@ arti_install() {
 
 arti_remove() {
     if ! grep -q "${user_name}" /etc/passwd; then
-        printf "Arti isn't installed\n"
+        printf "Arti isn't installed\n" >&2
         exit 1
     elif [[ -n "$(pgrep -u "${user_name}")" ]]; then
-        printf "Arti is still running, stop it first\n"
+        printf "Arti is still running, stop it first\n" >&2
         exit 1
     fi
 
