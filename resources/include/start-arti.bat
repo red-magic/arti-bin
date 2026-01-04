@@ -2,4 +2,4 @@
 
 cd /d "%~dp0"
 
-arti proxy -c arti.toml
+arti.exe proxy -c arti.toml
