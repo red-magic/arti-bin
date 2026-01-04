@@ -98,7 +98,7 @@ print_help() {
 }
 
 if [[ "${#}" -gt 1 ]]; then
-    printf "Only one argument is accepted\n" >&2
+    printf "Only 1 argument is accepted\n" >&2
     print_help
     exit 1
 elif [[ "${#}" -eq 0 ]]; then
