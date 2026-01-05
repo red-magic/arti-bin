@@ -94,7 +94,7 @@ build_windows_arc() {
 }
 
 print_help() {
-    printf "Usage: %s <linux | windows>\n" "$(basename "${0}")"
+    printf "Usage: %s <linux | windows>\n" "${0##*/}"
 }
 
 if [[ "${#}" -gt 1 ]]; then
