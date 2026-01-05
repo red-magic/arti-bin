@@ -106,7 +106,7 @@ elif [[ "${#}" -eq 0 ]]; then
     exit 0
 fi
 
-case "${1:-}" in
+case "${1}" in
     "linux")
         mkdir -vp release/linux
 
