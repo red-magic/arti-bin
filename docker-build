@@ -98,7 +98,7 @@ print_help() {
 }
 
 if [[ "${#}" -gt 1 ]]; then
-    printf "Only 1 argument is accepted\n" >&2
+    printf "Only 1 argument is accepted\n" 1>&2
     print_help
     exit 1
 elif [[ "${#}" -eq 0 ]]; then
@@ -164,7 +164,7 @@ case "${1}" in
         ;;
 
     *)
-        printf "Invalid argument: %s\n" "${1}" >&2
+        printf "Invalid argument: %s\n" "${1}" 1>&2
         print_help
         exit 1
         ;;
