@@ -16,7 +16,7 @@ home_dir="/var/lib/arti"
 tmp_dir="/tmp/arti"
 
 arti_download() {
-    if grep -q "${user_name}" /etc/passwd; then
+    if id "${user_name}" &> /dev/null; then
         printf "Arti is already installed\n" 1>&2
         exit 1
     fi
