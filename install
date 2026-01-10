@@ -60,14 +60,14 @@ arti_remove() {
         exit 1
     fi
 
-    userdel -r "${user_name}" &> /dev/null
-
     rm -vf "${bin_dir}/arti"
     rm -vf "${bin_dir}/lyrebird"
     rm -vrf "${config_dir}"
     rm -vrf "${doc_dir}"
 
     [[ -x "$(command -v systemctl)" ]] && rm -vf "${service_dir}/arti.service"
+
+    userdel -r "${user_name}" &> /dev/null
 }
 
 case "${1:-}" in
