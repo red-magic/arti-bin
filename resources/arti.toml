@@ -24,3 +24,4 @@ run_on_startup = false
 [storage]
 cache_dir = "/var/lib/arti/cache"
 state_dir = "/var/lib/arti/state"
+port_info_file = "/var/lib/arti/state/public/port_info.json"

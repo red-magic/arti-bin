@@ -4,8 +4,8 @@ set -euo pipefail
 
 [[ "$(id -u)" -ne 0 ]] && exec sudo "${0}" "${@}"
 
-arti_ver="1.8.0"
-lyrebird_ver="0.7.0"
+arti_ver="1.9.0"
+lyrebird_ver="0.8.0"
 
 user_name="arti"
 bin_dir="/usr/bin"

@@ -24,3 +24,4 @@ run_on_startup = false
 [storage]
 cache_dir = "cache"
 state_dir = "state"
+port_info_file = "state/public/port_info.json"
