@@ -7,10 +7,11 @@ on:
 
 jobs:
   extract-versions:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       arti_ver: ${{ steps.extract.outputs.arti_ver }}
       lyrebird_ver: ${{ steps.extract.outputs.lyrebird_ver }}
+
     steps:
       - name: Extract versions
         id: extract
@@ -20,105 +21,87 @@ jobs:
           echo "arti_ver=$arti_ver" >> "$GITHUB_OUTPUT"
           echo "lyrebird_ver=$lyrebird_ver" >> "$GITHUB_OUTPUT"
 
-  build-linux-arti:
-    runs-on: ubuntu-latest
+  build-arti:
+    name: arti-${{ matrix.target.os }}
+    runs-on: ubuntu-24.04
     container: rust:trixie
     needs: extract-versions
+    strategy:
+      matrix:
+        target:
+          - os: linux
+            rust-target: '' # Empty because the default target path for Linux is target/release
+            binary-name: arti
+            cargo-args: ''
+
+          - os: windows
+            rust-target: x86_64-pc-windows-gnu
+            binary-name: arti.exe
+            cargo-args: '--target x86_64-pc-windows-gnu --features static'
+
     steps:
-      - name: Download and build
-        run: |
-          curl -LO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
-          tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
-          cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
-          cargo build -p arti --locked --release
-          strip -s target/release/arti
-          mkdir /out
-          cp target/release/arti /out
-          cp crates/arti/src/arti-example-config.toml /out
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: arti-linux
-          path: |
-            /out/arti
-            /out/arti-example-config.toml
-
-  build-linux-lyrebird:
-    runs-on: ubuntu-latest
-    container: golang:trixie
-    needs: extract-versions
-    steps:
-      - name: Download and build
-        run: |
-          curl -LO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
-          tar xf lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
-          cd lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
-          CGO_ENABLED=1 go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o lyrebird ./cmd/lyrebird
-          mkdir /out
-          cp lyrebird /out
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: lyrebird-linux
-          path: /out/lyrebird
-
-  build-windows-arti:
-    runs-on: ubuntu-latest
-    container: rust:trixie
-    needs: extract-versions
-    steps:
-      - name: Install dependencies
+      - name: Install dependencies (Windows)
+        if: matrix.target.os == 'windows'
         run: |
           apt-get update -y
           apt-get install -y mingw-w64
-          rustup target add x86_64-pc-windows-gnu
+          rustup target add ${{ matrix.target.rust-target }}
 
       - name: Download and build
         run: |
           curl -LO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
-          cargo build -p arti --locked --release --target x86_64-pc-windows-gnu --features static
-          strip -s target/x86_64-pc-windows-gnu/release/arti.exe
+          cargo build -p arti --locked --release ${{ matrix.target.cargo-args }}
+          strip -s target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }}
           mkdir /out
-          cp target/x86_64-pc-windows-gnu/release/arti.exe /out
+          cp target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }} /out
           cp crates/arti/src/arti-example-config.toml /out
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: arti-windows
-          path: |
-            /out/arti.exe
-            /out/arti-example-config.toml
+          name: arti-${{ matrix.target.os }}
+          path: /out/arti*
 
-  build-windows-lyrebird:
-    runs-on: ubuntu-latest
+  build-lyrebird:
+    name: lyrebird-${{ matrix.target.os }}
+    runs-on: ubuntu-24.04
     container: golang:trixie
     needs: extract-versions
+    strategy:
+      matrix:
+        target:
+          - os: linux
+            binary-name: lyrebird
+            cgo-enabled: 1
+
+          - os: windows
+            binary-name: lyrebird.exe
+            cgo-enabled: 0
+
     steps:
       - name: Download and build
         run: |
           curl -LO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           tar xf lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           cd lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
-          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o lyrebird.exe ./cmd/lyrebird
+          GOOS=${{ matrix.target.os }} GOARCH=amd64 CGO_ENABLED=${{ matrix.target.cgo-enabled }} go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o ${{ matrix.target.binary-name }} ./cmd/lyrebird
           mkdir /out
-          cp lyrebird.exe /out
+          cp ${{ matrix.target.binary-name }} /out
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: lyrebird-windows
-          path: /out/lyrebird.exe
+          name: lyrebird-${{ matrix.target.os }}
+          path: /out/lyrebird*
 
   release:
-    runs-on: ubuntu-latest
-    needs: [extract-versions, build-linux-arti, build-linux-lyrebird, build-windows-arti, build-windows-lyrebird]
+    runs-on: ubuntu-24.04
+    needs: [extract-versions, build-arti, build-lyrebird]
     permissions:
       contents: write
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
@@ -128,39 +111,33 @@ jobs:
         with:
           path: artifacts
 
-      - name: Setup directories
-        run: |
-          mkdir dist
-          mkdir -p linux/arti
-          mkdir -p windows/arti
-
       - name: Create Linux distribution
         run: |
+          mkdir -p linux/arti
           cp artifacts/arti-linux/arti linux/arti
           cp artifacts/arti-linux/arti-example-config.toml linux/arti
           cp artifacts/lyrebird-linux/lyrebird linux/arti
           cp resources/include/arti-linux.toml linux/arti/arti.toml
           cp resources/include/start-arti linux/arti
-          chmod 755 linux/arti/arti
-          chmod 755 linux/arti/lyrebird
-          chmod 755 linux/arti/start-arti
+          chmod 755 linux/arti/arti linux/arti/lyrebird linux/arti/start-arti
           cd linux
-          tar czf ../dist/arti-linux.tar.gz arti --owner=0 --group=0 --numeric-owner
+          tar czf ../arti-linux.tar.gz arti --owner=0 --group=0 --numeric-owner
 
       - name: Create Windows distribution
         run: |
+          mkdir -p windows/arti
           cp artifacts/arti-windows/arti.exe windows/arti
           cp artifacts/arti-windows/arti-example-config.toml windows/arti
           cp artifacts/lyrebird-windows/lyrebird.exe windows/arti
           cp resources/include/arti-windows.toml windows/arti/arti.toml
           cp resources/include/start-arti.bat windows/arti
           cd windows
-          zip -Xr ../dist/arti-windows.zip arti
+          zip -Xr ../arti-windows.zip arti
 
-      - name: Create Release
+      - name: Create release
         uses: softprops/action-gh-release@v3
         with:
           name: Arti ${{ needs.extract-versions.outputs.arti_ver }}
           files: |
-            dist/arti-linux.tar.gz
-            dist/arti-windows.zip
+            arti-linux.tar.gz
+            arti-windows.zip
