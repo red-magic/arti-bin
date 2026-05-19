@@ -12,7 +12,7 @@ lyrebird_ver="0.8.1"
 arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver}/arti-arti-v${arti_ver}.tar.gz"
 lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${lyrebird_ver}/lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
 
-build_linux_arti() {
+build_arti_linux() {
     set -euo pipefail
 
     curl -LO "${arti_url}"
@@ -26,19 +26,7 @@ build_linux_arti() {
     cp -v crates/arti/src/arti-example-config.toml /out/release/linux
 }
 
-build_linux_lyrebird() {
-    set -euo pipefail
-
-    curl -LO "${lyrebird_url}"
-    tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
-    cd "lyrebird-lyrebird-${lyrebird_ver}"
-
-    CGO_ENABLED=1 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o lyrebird ./cmd/lyrebird
-
-    cp -v lyrebird /out/release/linux
-}
-
-build_windows_arti() {
+build_arti_windows() {
     set -euo pipefail
 
     apt-get update -y
@@ -56,7 +44,19 @@ build_windows_arti() {
     cp -v crates/arti/src/arti-example-config.toml /out/release/windows
 }
 
-build_windows_lyrebird() {
+build_lyrebird_linux() {
+    set -euo pipefail
+
+    curl -LO "${lyrebird_url}"
+    tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
+    cd "lyrebird-lyrebird-${lyrebird_ver}"
+
+    CGO_ENABLED=1 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o lyrebird ./cmd/lyrebird
+
+    cp -v lyrebird /out/release/linux
+}
+
+build_lyrebird_linux() {
     set -euo pipefail
 
     curl -LO "${lyrebird_url}"
@@ -68,7 +68,7 @@ build_windows_lyrebird() {
     cp -v lyrebird.exe /out/release/windows
 }
 
-build_linux_arc() {
+build_arc_linux() {
     set -euo pipefail
 
     cp -vf /out/resources/include/arti-linux.toml /out/release/linux/arti.toml
@@ -79,7 +79,7 @@ build_linux_arc() {
     cp -vf arti-linux.tar.gz /out/release
 }
 
-build_windows_arc() {
+build_arc_windows() {
     set -euo pipefail
 
     apt-get update -y
@@ -117,7 +117,7 @@ case "${1}" in
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_arti}" \
-               /bin/bash -c "$(declare -f build_linux_arti) && build_linux_arti"
+               /bin/bash -c "$(declare -f build_arti_linux) && build_arti_linux"
 
         docker run --rm \
                --env lyrebird_ver="${lyrebird_ver}" \
@@ -126,13 +126,13 @@ case "${1}" in
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_lyrebird}" \
-               /bin/bash -c "$(declare -f build_linux_lyrebird) && build_linux_lyrebird"
+               /bin/bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
 
         docker run --rm \
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_arc}" \
-               /bin/bash -c "$(declare -f build_linux_arc) && build_linux_arc"
+               /bin/bash -c "$(declare -f build_arc_linux) && build_arc_linux"
         ;;
 
     "windows")
@@ -145,7 +145,7 @@ case "${1}" in
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_arti}" \
-               /bin/bash -c "$(declare -f build_windows_arti) && build_windows_arti"
+               /bin/bash -c "$(declare -f build_arti_windows) && build_arti_windows"
 
         docker run --rm \
                --env lyrebird_ver="${lyrebird_ver}" \
@@ -154,13 +154,13 @@ case "${1}" in
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_lyrebird}" \
-               /bin/bash -c "$(declare -f build_windows_lyrebird) && build_windows_lyrebird"
+               /bin/bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
 
         docker run --rm \
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_arc}" \
-               /bin/bash -c "$(declare -f build_windows_arc) && build_windows_arc"
+               /bin/bash -c "$(declare -f build_arc_windows) && build_arc_windows"
         ;;
 
     *)
