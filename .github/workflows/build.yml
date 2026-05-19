@@ -49,6 +49,8 @@ jobs:
 
       - name: Download and build
         run: |
+          mkdir /build
+          cd /build
           curl -LO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
@@ -83,6 +85,8 @@ jobs:
     steps:
       - name: Download and build
         run: |
+          mkdir /build
+          cd /build
           curl -LO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           tar xf lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           cd lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
