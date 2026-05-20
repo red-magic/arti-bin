@@ -56,7 +56,7 @@ build_lyrebird_linux() {
     cp -v lyrebird /out/release/linux
 }
 
-build_lyrebird_linux() {
+build_lyrebird_windows() {
     set -euo pipefail
 
     curl -LO "${lyrebird_url}"
@@ -154,7 +154,7 @@ case "${1}" in
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_lyrebird}" \
-               /bin/bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
+               /bin/bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
 
         docker run --rm \
                -v "$(pwd)":/out:Z \
