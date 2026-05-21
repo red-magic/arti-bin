@@ -11,7 +11,7 @@ user_name="arti"
 bin_dir="/usr/bin"
 config_dir="/etc/arti"
 doc_dir="/usr/share/doc/arti"
-service_dir="/usr/lib/systemd/system"
+service_dir="/etc/systemd/system"
 home_dir="/var/lib/arti"
 tmp_dir="/tmp/arti"
 
