@@ -7,6 +7,9 @@ Type=simple
 User=arti
 ExecStart=/usr/bin/arti proxy -c /etc/arti/arti.toml
 KillSignal=SIGINT
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=60
 
 [Install]
 WantedBy=multi-user.target
