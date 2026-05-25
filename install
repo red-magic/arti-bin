@@ -16,6 +16,12 @@ home_dir="/var/lib/arti"
 tmp_dir="/tmp/arti"
 
 arti_download() {
+    if [[ ! -x "$(command -v systemctl)" ]]; then
+        printf "Arti Tor Service depends on systemd\n" 1>&2
+        printf "Portable version is available here https://github.com/red-magic/arti-bin/releases\n" 1>&2
+        exit 1
+    fi
+
     if id "${user_name}" &> /dev/null; then
         printf "Arti is already installed\n" 1>&2
         exit 1
@@ -38,16 +44,14 @@ arti_install() {
 
     install -vm 755 "${tmp_dir}/arti/arti" -t "${bin_dir}"
     install -vm 755 "${tmp_dir}/arti/lyrebird" -t "${bin_dir}"
-    install -vDm 644 "${tmp_dir}/arti/arti-example-config.toml" -t "${doc_dir}"
     install -vDm 644 resources/arti.toml -t "${config_dir}"
+    install -vDm 644 "${tmp_dir}/arti/arti-example-config.toml" -t "${doc_dir}"
+    install -vm 644 resources/arti.service -t "${service_dir}"
 
     rm -vrf "${tmp_dir}"
 
-    if [[ -x "$(command -v systemctl)" ]]; then
-        install -vm 644 resources/arti.service -t "${service_dir}"
-        printf "\nRun \"systemctl enable arti.service\" to start Arti on boot\n"
-        printf "Bridges can be set in %s/arti.toml\n\n" "${config_dir}"
-    fi
+    printf "\nRun \"systemctl enable arti.service\" to start Arti on boot\n"
+    printf "Bridges can be set in %s/arti.toml\n\n" "${config_dir}"
 }
 
 arti_remove() {
@@ -63,8 +67,7 @@ arti_remove() {
     rm -vf "${bin_dir}/lyrebird"
     rm -vrf "${config_dir}"
     rm -vrf "${doc_dir}"
-
-    [[ -x "$(command -v systemctl)" ]] && rm -vf "${service_dir}/arti.service"
+    rm -vf "${service_dir}/arti.service"
 
     userdel -r "${user_name}" &> /dev/null
 }
