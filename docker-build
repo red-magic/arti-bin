@@ -15,7 +15,7 @@ lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transp
 build_arti_linux() {
     set -euo pipefail
 
-    curl -LO "${arti_url}"
+    curl -fLO "${arti_url}"
     tar xvf "arti-arti-v${arti_ver}.tar.gz"
     cd "arti-arti-v${arti_ver}"
 
@@ -33,7 +33,7 @@ build_arti_windows() {
     apt-get install -y mingw-w64
     rustup target add x86_64-pc-windows-gnu
 
-    curl -LO "${arti_url}"
+    curl -fLO "${arti_url}"
     tar xvf "arti-arti-v${arti_ver}.tar.gz"
     cd "arti-arti-v${arti_ver}"
 
@@ -47,7 +47,7 @@ build_arti_windows() {
 build_lyrebird_linux() {
     set -euo pipefail
 
-    curl -LO "${lyrebird_url}"
+    curl -fLO "${lyrebird_url}"
     tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
     cd "lyrebird-lyrebird-${lyrebird_ver}"
 
@@ -59,7 +59,7 @@ build_lyrebird_linux() {
 build_lyrebird_windows() {
     set -euo pipefail
 
-    curl -LO "${lyrebird_url}"
+    curl -fLO "${lyrebird_url}"
     tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
     cd "lyrebird-lyrebird-${lyrebird_ver}"
 

@@ -51,7 +51,7 @@ jobs:
         run: |
           mkdir /build
           cd /build
-          curl -LO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+          curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
           cargo build -p arti --locked --release ${{ matrix.target.cargo-args }}
@@ -87,7 +87,7 @@ jobs:
         run: |
           mkdir /build
           cd /build
-          curl -LO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
+          curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           tar xf lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           cd lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
           GOOS=${{ matrix.target.os }} GOARCH=amd64 CGO_ENABLED=${{ matrix.target.cgo-enabled }} go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o ${{ matrix.target.binary-name }} ./cmd/lyrebird
