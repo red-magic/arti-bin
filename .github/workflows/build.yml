@@ -30,21 +30,20 @@ jobs:
       matrix:
         target:
           - os: linux
-            rust-target: '' # Empty because the default target path for Linux is target/release
+            rust-target: x86_64-unknown-linux-musl
+            dependencies: musl-dev
             binary-name: arti
-            cargo-args: ''
 
           - os: windows
             rust-target: x86_64-pc-windows-gnu
+            dependencies: mingw-w64
             binary-name: arti.exe
-            cargo-args: '--target x86_64-pc-windows-gnu --features static'
 
     steps:
-      - name: Install dependencies (Windows)
-        if: matrix.target.os == 'windows'
+      - name: Install dependencies
         run: |
           apt-get update -y
-          apt-get install -y mingw-w64
+          apt-get install -y ${{ matrix.target.dependencies }}
           rustup target add ${{ matrix.target.rust-target }}
 
       - name: Download and build
@@ -54,7 +53,7 @@ jobs:
           curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
-          cargo build -p arti --locked --release ${{ matrix.target.cargo-args }}
+          cargo build -p arti --locked --release --features static --target ${{ matrix.target.rust-target }}
           strip -s target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }}
           mkdir /out
           cp target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }} /out
@@ -76,11 +75,9 @@ jobs:
         target:
           - os: linux
             binary-name: lyrebird
-            cgo-enabled: 1
 
           - os: windows
             binary-name: lyrebird.exe
-            cgo-enabled: 0
 
     steps:
       - name: Download and build
@@ -90,7 +87,7 @@ jobs:
           curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           tar xf lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           cd lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
-          GOOS=${{ matrix.target.os }} GOARCH=amd64 CGO_ENABLED=${{ matrix.target.cgo-enabled }} go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o ${{ matrix.target.binary-name }} ./cmd/lyrebird
+          GOOS=${{ matrix.target.os }} GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o ${{ matrix.target.binary-name }} ./cmd/lyrebird
           mkdir /out
           cp ${{ matrix.target.binary-name }} /out
 

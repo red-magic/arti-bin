@@ -15,14 +15,18 @@ lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transp
 build_arti_linux() {
     set -euo pipefail
 
+    apt-get update -y
+    apt-get install -y musl-dev
+    rustup target add x86_64-unknown-linux-musl
+
     curl -fLO "${arti_url}"
     tar xvf "arti-arti-v${arti_ver}.tar.gz"
     cd "arti-arti-v${arti_ver}"
 
-    cargo build -p arti --locked --release
-    strip -sv target/release/arti
+    cargo build -p arti --locked --release --features static --target x86_64-unknown-linux-musl
+    strip -sv target/x86_64-unknown-linux-musl/release/arti
 
-    cp -v target/release/arti /out/release/linux
+    cp -v target/x86_64-unknown-linux-musl/release/arti /out/release/linux
     cp -v crates/arti/src/arti-example-config.toml /out/release/linux
 }
 
@@ -37,7 +41,7 @@ build_arti_windows() {
     tar xvf "arti-arti-v${arti_ver}.tar.gz"
     cd "arti-arti-v${arti_ver}"
 
-    cargo build -p arti --locked --release --target x86_64-pc-windows-gnu --features static
+    cargo build -p arti --locked --release --features static --target x86_64-pc-windows-gnu
     strip -sv target/x86_64-pc-windows-gnu/release/arti.exe
 
     cp -v target/x86_64-pc-windows-gnu/release/arti.exe /out/release/windows
@@ -51,7 +55,7 @@ build_lyrebird_linux() {
     tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
     cd "lyrebird-lyrebird-${lyrebird_ver}"
 
-    CGO_ENABLED=1 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o lyrebird ./cmd/lyrebird
+    GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o lyrebird ./cmd/lyrebird
 
     cp -v lyrebird /out/release/linux
 }
