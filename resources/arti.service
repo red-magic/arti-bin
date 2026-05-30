@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=arti
+Group=arti
 ExecStart=/usr/bin/arti proxy -c /etc/arti/arti.toml
 KillSignal=SIGINT
 Restart=on-failure
