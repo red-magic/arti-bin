@@ -17,11 +17,12 @@ TimeoutStopSec=60
 LimitNOFILE=16384
 
 NoNewPrivileges=yes
-PrivateDevices=yes
-PrivateTmp=yes
-ProtectHome=yes
+
 ProtectSystem=strict
 ReadWritePaths=/var/lib/arti
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
 
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_BIND_SERVICE
