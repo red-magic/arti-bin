@@ -114,7 +114,8 @@ case "${1}" in
     "linux")
         mkdir -vp release/linux
 
-        docker run --rm \
+        docker run \
+               --rm \
                --env arti_ver="${arti_ver}" \
                --env arti_url="${arti_url}" \
                -v "$(pwd)":/out:Z \
@@ -122,7 +123,8 @@ case "${1}" in
                "${container_arti}" \
                /bin/bash -c "$(declare -f build_arti_linux) && build_arti_linux"
 
-        docker run --rm \
+        docker run \
+               --rm \
                --env lyrebird_ver="${lyrebird_ver}" \
                --env lyrebird_url="${lyrebird_url}" \
                -v "$(pwd)":/out:Z \
@@ -130,7 +132,8 @@ case "${1}" in
                "${container_lyrebird}" \
                /bin/bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
 
-        docker run --rm \
+        docker run \
+               --rm \
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_arc}" \
@@ -140,7 +143,8 @@ case "${1}" in
     "windows")
         mkdir -vp release/windows
 
-        docker run --rm \
+        docker run \
+               --rm \
                --env arti_ver="${arti_ver}" \
                --env arti_url="${arti_url}" \
                -v "$(pwd)":/out:Z \
@@ -148,7 +152,8 @@ case "${1}" in
                "${container_arti}" \
                /bin/bash -c "$(declare -f build_arti_windows) && build_arti_windows"
 
-        docker run --rm \
+        docker run \
+               --rm \
                --env lyrebird_ver="${lyrebird_ver}" \
                --env lyrebird_url="${lyrebird_url}" \
                -v "$(pwd)":/out:Z \
@@ -156,7 +161,8 @@ case "${1}" in
                "${container_lyrebird}" \
                /bin/bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
 
-        docker run --rm \
+        docker run \
+               --rm \
                -v "$(pwd)":/out:Z \
                -w /build \
                "${container_arc}" \
