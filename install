@@ -15,7 +15,7 @@ service_dir="/etc/systemd/system"
 home_dir="/var/lib/arti"
 tmp_dir="/tmp/arti"
 
-arti_download() {
+arti_pre_install() {
     if [[ ! -x "$(command -v systemctl)" ]]; then
         printf "Arti Tor Service depends on systemd\n" 1>&2
         printf "Portable version is available here https://github.com/red-magic/arti-bin/releases\n" 1>&2
@@ -26,8 +26,11 @@ arti_download() {
         printf "Arti is already installed\n" 1>&2
         exit 1
     fi
+}
 
+arti_download() {
     [[ -d "${tmp_dir}" ]] && rm -vrf "${tmp_dir}"
+
     mkdir -v "${tmp_dir}"
     pushd "${tmp_dir}"
 
@@ -54,7 +57,7 @@ arti_install() {
     printf "Bridges can be set in %s/arti.toml\n\n" "${config_dir}"
 }
 
-arti_remove() {
+arti_pre_remove() {
     if ! id "${user_name}" &> /dev/null; then
         printf "Arti isn't installed\n" 1>&2
         exit 1
@@ -62,7 +65,9 @@ arti_remove() {
         printf "Arti is still running, stop it first\n" 1>&2
         exit 1
     fi
+}
 
+arti_remove() {
     rm -vf "${bin_dir}/arti"
     rm -vf "${bin_dir}/lyrebird"
     rm -vrf "${config_dir}"
@@ -74,9 +79,11 @@ arti_remove() {
 
 case "${1}" in
     "remove")
+        arti_pre_remove
         arti_remove
         ;;
     "")
+        arti_pre_install
         arti_download
         arti_install
         ;;
