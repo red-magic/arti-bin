@@ -7,7 +7,7 @@ on:
 
 jobs:
   extract-versions:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       arti_ver: ${{ steps.extract.outputs.arti_ver }}
       lyrebird_ver: ${{ steps.extract.outputs.lyrebird_ver }}
@@ -23,7 +23,7 @@ jobs:
 
   build-arti:
     name: arti-${{ matrix.target.os }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container: rust:trixie
     needs: extract-versions
     strategy:
@@ -67,7 +67,7 @@ jobs:
 
   build-lyrebird:
     name: lyrebird-${{ matrix.target.os }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container: golang:trixie
     needs: extract-versions
     strategy:
@@ -98,7 +98,7 @@ jobs:
           path: /out/lyrebird*
 
   release:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [extract-versions, build-arti, build-lyrebird]
     permissions:
       contents: write
