@@ -99,7 +99,7 @@ build_arc() {
 
     case "${target_os}" in
         "linux")
-            tar czf "arti-${arti_ver}-${target_os}-x86_64.tar.gz" arti --owner 0 --group 0 --numeric-owner
+            tar czvf "arti-${arti_ver}-${target_os}-x86_64.tar.gz" arti --owner 0 --group 0 --numeric-owner
             cp -vf "arti-${arti_ver}-${target_os}-x86_64.tar.gz" /out/build
             ;;
 
