@@ -90,11 +90,12 @@ build_arc() {
     target_os="${1}"
 
     case "${target_os}" in
-        "linux") cp -vf "/out/resources/include/start-arti" "/out/build/${target_os}" ;;
-        "windows") cp -vf "/out/resources/include/start-arti.bat" "/out/build/${target_os}" ;;
+        "linux") start_script="start-arti" ;;
+        "windows") start_script="start-arti.bat" ;;
     esac
 
     cp -vf "/out/resources/include/arti-${target_os}.toml" "/out/build/${target_os}/arti.toml"
+    cp -vf "/out/resources/include/${start_script}" "/out/build/${target_os}"
     cp -vrf "/out/build/${target_os}" arti
 
     case "${target_os}" in
