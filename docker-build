@@ -12,89 +12,106 @@ lyrebird_ver="0.8.1"
 arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver}/arti-arti-v${arti_ver}.tar.gz"
 lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${lyrebird_ver}/lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
 
-build_arti_linux() {
+run_build() {
     set -euo pipefail
 
+    image="${1}"; shift
+    func_name="${1}"; shift
+    target_os="${1}"
+
+    docker run \
+           --rm \
+           --env arti_ver="${arti_ver}" \
+           --env arti_url="${arti_url}" \
+           --env lyrebird_ver="${lyrebird_ver}" \
+           --env lyrebird_url="${lyrebird_url}" \
+           -v "$(pwd)":/out:Z \
+           -w /build \
+           "${image}" \
+           /bin/bash -c "$(declare -f "${func_name}") && ${func_name} ${target_os}"
+}
+
+build_arti() {
+    set -euo pipefail
+
+    target_os="${1}"
+
     apt-get update -y
-    apt-get install -y musl-dev
-    rustup target add x86_64-unknown-linux-musl
+
+    case "${target_os}" in
+        "linux")
+            dependencies="musl-dev"
+            cargo_target="x86_64-unknown-linux-musl"
+            binary_name="arti"
+            ;;
+
+        "windows")
+            dependencies="mingw-w64"
+            cargo_target="x86_64-pc-windows-gnu"
+            binary_name="arti.exe"
+            ;;
+    esac
+
+    apt-get install -y "${dependencies}"
+    rustup target add "${cargo_target}"
 
     curl -fLO "${arti_url}"
     tar xvf "arti-arti-v${arti_ver}.tar.gz"
     cd "arti-arti-v${arti_ver}"
 
-    cargo build -p arti --locked --release --features static --target x86_64-unknown-linux-musl
-    strip -sv target/x86_64-unknown-linux-musl/release/arti
+    cargo build -p arti --locked --release --features static --target "${cargo_target}"
+    strip -sv "target/${cargo_target}/release/${binary_name}"
 
-    cp -v target/x86_64-unknown-linux-musl/release/arti /out/release/linux
-    cp -v crates/arti/src/arti-example-config.toml /out/release/linux
+    cp -vf "target/${cargo_target}/release/${binary_name}" "/out/build/${target_os}"
+    cp -vf crates/arti/src/arti-example-config.toml "/out/build/${target_os}"
 }
 
-build_arti_windows() {
+build_lyrebird() {
     set -euo pipefail
 
-    apt-get update -y
-    apt-get install -y mingw-w64
-    rustup target add x86_64-pc-windows-gnu
+    target_os="${1}"
 
-    curl -fLO "${arti_url}"
-    tar xvf "arti-arti-v${arti_ver}.tar.gz"
-    cd "arti-arti-v${arti_ver}"
-
-    cargo build -p arti --locked --release --features static --target x86_64-pc-windows-gnu
-    strip -sv target/x86_64-pc-windows-gnu/release/arti.exe
-
-    cp -v target/x86_64-pc-windows-gnu/release/arti.exe /out/release/windows
-    cp -v crates/arti/src/arti-example-config.toml /out/release/windows
-}
-
-build_lyrebird_linux() {
-    set -euo pipefail
+    case "${target_os}" in
+        "linux") binary_name="lyrebird" ;;
+        "windows") binary_name="lyrebird.exe" ;;
+    esac
 
     curl -fLO "${lyrebird_url}"
     tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
     cd "lyrebird-lyrebird-${lyrebird_ver}"
 
-    GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o lyrebird ./cmd/lyrebird
+    GOOS="${target_os}" GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o "${binary_name}" ./cmd/lyrebird
 
-    cp -v lyrebird /out/release/linux
+    cp -vf "${binary_name}" "/out/build/${target_os}"
 }
 
-build_lyrebird_windows() {
+build_arc() {
     set -euo pipefail
 
-    curl -fLO "${lyrebird_url}"
-    tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
-    cd "lyrebird-lyrebird-${lyrebird_ver}"
+    target_os="${1}"
 
-    GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o lyrebird.exe ./cmd/lyrebird
+    case "${target_os}" in
+        "linux") cp -vf "/out/resources/include/start-arti" "/out/build/${target_os}" ;;
+        "windows") cp -vf "/out/resources/include/start-arti.bat" "/out/build/${target_os}" ;;
+    esac
 
-    cp -v lyrebird.exe /out/release/windows
-}
+    cp -vf "/out/resources/include/arti-${target_os}.toml" "/out/build/${target_os}/arti.toml"
+    cp -vrf "/out/build/${target_os}" arti
 
-build_arc_linux() {
-    set -euo pipefail
+    case "${target_os}" in
+        "linux")
+            tar czf "arti-${arti_ver}-${target_os}-x86_64.tar.gz" arti --owner 0 --group 0 --numeric-owner
+            cp -vf "arti-${arti_ver}-${target_os}-x86_64.tar.gz" /out/build
+            ;;
 
-    cp -vf /out/resources/include/arti-linux.toml /out/release/linux/arti.toml
-    cp -vf /out/resources/include/start-arti /out/release/linux
-    cp -vrf /out/release/linux arti
+        "windows")
+            apt-get update -y
+            apt-get install -y zip
 
-    tar czvf arti-linux.tar.gz arti --owner 0 --group 0 --numeric-owner
-    cp -vf arti-linux.tar.gz /out/release
-}
-
-build_arc_windows() {
-    set -euo pipefail
-
-    apt-get update -y
-    apt-get install -y zip
-
-    cp -vf /out/resources/include/arti-windows.toml /out/release/windows/arti.toml
-    cp -vf /out/resources/include/start-arti.bat /out/release/windows
-    cp -vrf /out/release/windows arti
-
-    zip -Xr arti-windows.zip arti
-    cp -vf arti-windows.zip /out/release
+            zip -Xr "arti-${arti_ver}-${target_os}-x86_64.zip" arti
+            cp -vf "arti-${arti_ver}-${target_os}-x86_64.zip" /out/build
+            ;;
+    esac
 }
 
 print_help() {
@@ -110,68 +127,19 @@ elif [[ "${#}" -eq 0 ]]; then
     exit 0
 fi
 
-case "${1}" in
-    "linux")
-        mkdir -vp release/linux
+target_os="${1}"
 
-        docker run \
-               --rm \
-               --env arti_ver="${arti_ver}" \
-               --env arti_url="${arti_url}" \
-               -v "$(pwd)":/out:Z \
-               -w /build \
-               "${container_arti}" \
-               /bin/bash -c "$(declare -f build_arti_linux) && build_arti_linux"
-
-        docker run \
-               --rm \
-               --env lyrebird_ver="${lyrebird_ver}" \
-               --env lyrebird_url="${lyrebird_url}" \
-               -v "$(pwd)":/out:Z \
-               -w /build \
-               "${container_lyrebird}" \
-               /bin/bash -c "$(declare -f build_lyrebird_linux) && build_lyrebird_linux"
-
-        docker run \
-               --rm \
-               -v "$(pwd)":/out:Z \
-               -w /build \
-               "${container_arc}" \
-               /bin/bash -c "$(declare -f build_arc_linux) && build_arc_linux"
-        ;;
-
-    "windows")
-        mkdir -vp release/windows
-
-        docker run \
-               --rm \
-               --env arti_ver="${arti_ver}" \
-               --env arti_url="${arti_url}" \
-               -v "$(pwd)":/out:Z \
-               -w /build \
-               "${container_arti}" \
-               /bin/bash -c "$(declare -f build_arti_windows) && build_arti_windows"
-
-        docker run \
-               --rm \
-               --env lyrebird_ver="${lyrebird_ver}" \
-               --env lyrebird_url="${lyrebird_url}" \
-               -v "$(pwd)":/out:Z \
-               -w /build \
-               "${container_lyrebird}" \
-               /bin/bash -c "$(declare -f build_lyrebird_windows) && build_lyrebird_windows"
-
-        docker run \
-               --rm \
-               -v "$(pwd)":/out:Z \
-               -w /build \
-               "${container_arc}" \
-               /bin/bash -c "$(declare -f build_arc_windows) && build_arc_windows"
-        ;;
-
+case "${target_os}" in
+    "linux" | "windows") ;;
     *)
-        printf "Invalid argument: %s\n" "${1}" 1>&2
+        printf "Invalid argument: %s\n" "${target_os}" 1>&2
         print_help
         exit 1
         ;;
 esac
+
+mkdir -vp "build/${target_os}"
+
+run_build "${container_arti}" build_arti "${target_os}"
+run_build "${container_lyrebird}" build_lyrebird "${target_os}"
+run_build "${container_arc}" build_arc "${target_os}"
