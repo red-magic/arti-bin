@@ -48,14 +48,13 @@ jobs:
 
       - name: Download and build
         run: |
-          mkdir /build
+          mkdir /build /out
           cd /build
           curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
           cargo build -p arti --locked --release --features static --target ${{ matrix.target.rust-target }}
           strip -s target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }}
-          mkdir /out
           cp target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }} /out
           cp crates/arti/src/arti-example-config.toml /out
 
@@ -82,13 +81,12 @@ jobs:
     steps:
       - name: Download and build
         run: |
-          mkdir /build
+          mkdir /build /out
           cd /build
           curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           tar xf lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           cd lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
           GOOS=${{ matrix.target.os }} GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o ${{ matrix.target.binary-name }} ./cmd/lyrebird
-          mkdir /out
           cp ${{ matrix.target.binary-name }} /out
 
       - name: Upload artifacts
