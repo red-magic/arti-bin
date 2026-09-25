@@ -16,4 +16,4 @@ Run the systemd service to start `arti`:
 
 ## Portable Version
 
-Download the release archive and launch Arti with the `start-arti` script. All required files will be created in the internal directory.
+Download and extract the release archive, then launch Arti with the `start-arti` script. All required files will be created in the internal directory.
