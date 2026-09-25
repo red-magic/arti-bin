@@ -36,8 +36,6 @@ build_arti() {
 
     target_os="${1}"
 
-    apt-get update -y
-
     case "${target_os}" in
         "linux")
             dependencies="musl-dev"
@@ -52,6 +50,7 @@ build_arti() {
             ;;
     esac
 
+    apt-get update -y
     apt-get install -y "${dependencies}"
     rustup target add "${cargo_target}"
 
