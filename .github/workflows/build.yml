@@ -120,7 +120,7 @@ jobs:
           cp resources/include/start-arti linux/arti
           chmod 755 linux/arti/arti linux/arti/lyrebird linux/arti/start-arti
           cd linux
-          tar czf ../arti-linux.tar.gz arti --owner=0 --group=0 --numeric-owner
+          tar czf ../arti-${{ needs.extract-versions.outputs.arti_ver }}-linux-x86_64.tar.gz arti --owner=0 --group=0 --numeric-owner
 
       - name: Create Windows distribution
         run: |
@@ -131,12 +131,12 @@ jobs:
           cp resources/include/arti-windows.toml windows/arti/arti.toml
           cp resources/include/start-arti.bat windows/arti
           cd windows
-          zip -Xr ../arti-windows.zip arti
+          zip -Xr ../arti-${{ needs.extract-versions.outputs.arti_ver }}-windows-x86_64.zip arti
 
       - name: Create release
         uses: softprops/action-gh-release@v3
         with:
           name: Arti ${{ needs.extract-versions.outputs.arti_ver }}
           files: |
-            arti-linux.tar.gz
-            arti-windows.zip
+            arti-${{ needs.extract-versions.outputs.arti_ver }}-linux-x86_64.tar.gz
+            arti-${{ needs.extract-versions.outputs.arti_ver }}-windows-x86_64.zip
