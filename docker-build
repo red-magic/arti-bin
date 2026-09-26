@@ -15,9 +15,9 @@ lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transp
 run_build() {
     set -euo pipefail
 
-    image="${1}"; shift
-    func_name="${1}"; shift
-    target_os="${1}"
+    image="${1}"
+    func_name="${2}"
+    target_os="${3}"
 
     docker run \
            --rm \
