@@ -13,8 +13,6 @@ arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver
 lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${lyrebird_ver}/lyrebird-${lyrebird_ver}.tar.gz"
 
 run_build() {
-    set -euo pipefail
-
     image="${1}"
     func_name="${2}"
     target_os="${3}"
