@@ -26,12 +26,10 @@ run_build() {
            -v "$(pwd)":/out:Z \
            -w /build \
            "${image}" \
-           /bin/bash -c "$(declare -f "${func_name}") && ${func_name} ${target_os}"
+           /bin/bash -c "set -euo pipefail; $(declare -f "${func_name}"); ${func_name} ${target_os}"
 }
 
 build_arti() {
-    set -euo pipefail
-
     target_os="${1}"
 
     case "${target_os}" in
@@ -64,8 +62,6 @@ build_arti() {
 }
 
 build_lyrebird() {
-    set -euo pipefail
-
     target_os="${1}"
 
     case "${target_os}" in
@@ -83,8 +79,6 @@ build_lyrebird() {
 }
 
 build_arc() {
-    set -euo pipefail
-
     target_os="${1}"
 
     case "${target_os}" in
