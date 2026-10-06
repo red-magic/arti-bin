@@ -4,8 +4,8 @@ set -euo pipefail
 
 [[ "$(id -u)" -ne 0 ]] && exec sudo "${0}" "${1:-}"
 
-arti_ver="2.6.0"
-lyrebird_ver="0.8.1"
+arti_ver="2.7.0"
+lyrebird_ver="0.9.0"
 
 user_name="arti"
 bin_dir="/usr/bin"
@@ -34,8 +34,8 @@ download_arti() {
     mkdir -v "${tmp_dir}"
     pushd "${tmp_dir}"
 
-    curl -fLO "https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-linux.tar.gz"
-    tar xvf arti-linux.tar.gz
+    curl -fLO "https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-${arti_ver}-linux-x86_64.tar.gz"
+    tar xvf "arti-${arti_ver}-linux-x86_64.tar.gz"
 
     popd
 }
