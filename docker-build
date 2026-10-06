@@ -76,8 +76,8 @@ build_lyrebird() {
     esac
 
     curl -fLO "${lyrebird_url}"
-    tar xvf "lyrebird-lyrebird-${lyrebird_ver}.tar.gz"
-    cd "lyrebird-lyrebird-${lyrebird_ver}"
+    tar xvf "lyrebird-${lyrebird_ver}.tar.gz"
+    cd "lyrebird-${lyrebird_ver}"
 
     GOOS="${target_os}" GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${lyrebird_ver} -w -s" -v -o "${binary_name}" ./cmd/lyrebird
 

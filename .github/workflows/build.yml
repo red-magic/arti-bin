@@ -84,8 +84,8 @@ jobs:
           mkdir /build /out
           cd /build
           curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
-          tar xf lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
-          cd lyrebird-lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
+          tar xf lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
+          cd lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
           GOOS=${{ matrix.target.os }} GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o ${{ matrix.target.binary-name }} ./cmd/lyrebird
           cp ${{ matrix.target.binary-name }} /out
 
