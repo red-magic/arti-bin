@@ -6,6 +6,7 @@ set -euo pipefail
 
 arti_ver="2.7.0"
 lyrebird_ver="0.9.0"
+arti_link="https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-${arti_ver}-linux-x86_64.tar.gz"
 
 user_name="arti"
 bin_dir="/usr/bin"
@@ -29,21 +30,16 @@ pre_install_check() {
 }
 
 download_arti() {
-    [[ -d "${tmp_dir}" ]] && rm -vrf "${tmp_dir}"
-
+    [[ -d "${tmp_dir}" ]] && rm -rf "${tmp_dir}"
     mkdir -v "${tmp_dir}"
-    pushd "${tmp_dir}"
 
-    curl -fLO "https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-${arti_ver}-linux-x86_64.tar.gz"
-    tar xvf "arti-${arti_ver}-linux-x86_64.tar.gz"
-
-    popd
+    curl -fLo "${tmp_dir}/arti-${arti_ver}-linux-x86_64.tar.gz" "${arti_link}"
+    tar xvf "${tmp_dir}/arti-${arti_ver}-linux-x86_64.tar.gz" -C "${tmp_dir}"
 }
 
 install_arti() {
-    mkdir -vm 700 "${home_dir}"
     useradd -M -r -s "$(command -v nologin)" -d "${home_dir}" -c "Arti Daemon" "${user_name}"
-    chown -v "${user_name}":"${user_name}" "${home_dir}"
+    install -vdm 700 -o "${user_name}" -g "${user_name}" "${home_dir}"
 
     install -vm 755 "${tmp_dir}/arti/arti" -t "${bin_dir}"
     install -vm 755 "${tmp_dir}/arti/lyrebird" -t "${bin_dir}"
@@ -51,7 +47,7 @@ install_arti() {
     install -vDm 644 "${tmp_dir}/arti/arti-example-config.toml" -t "${doc_dir}"
     install -vm 644 resources/arti.service -t "${service_dir}"
 
-    rm -vrf "${tmp_dir}"
+    rm -rf "${tmp_dir}"
 
     printf "\nRun \"systemctl enable arti.service\" to start Arti on boot\n"
     printf "Bridges can be set in %s/arti.toml\n\n" "${config_dir}"
