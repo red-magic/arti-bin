@@ -38,7 +38,7 @@ download_arti() {
 }
 
 install_arti() {
-    useradd -M -r -s "$(command -v nologin)" -d "${home_dir}" -c "Arti Daemon" "${user_name}"
+    useradd -r -M -d "${home_dir}" -s "$(command -v nologin)" -c "Arti Daemon" "${user_name}"
     install -vdm 700 -o "${user_name}" -g "${user_name}" "${home_dir}"
 
     install -vm 755 "${tmp_dir}/arti/arti" -t "${bin_dir}"
