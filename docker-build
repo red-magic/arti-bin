@@ -90,8 +90,8 @@ build_arc() {
     esac
 
     cp -vf "/out/resources/arti.toml" "/out/build/${target_os}"
-    patch "/out/build/${target_os}/arti.toml" < "/out/resources/portable/arti-${target_os}-config.patch"
-    cp -vf "/out/resources/portable/${start_script}" "/out/build/${target_os}"
+    patch "/out/build/${target_os}/arti.toml" < "/out/resources/portable/${target_os}/arti-config.patch"
+    cp -vf "/out/resources/portable/${target_os}/${start_script}" "/out/build/${target_os}"
     cp -vrf "/out/build/${target_os}" arti
 
     case "${target_os}" in

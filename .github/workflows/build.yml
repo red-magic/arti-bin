@@ -117,8 +117,8 @@ jobs:
           cp artifacts/arti-linux/arti-example-config.toml linux/arti
           cp artifacts/lyrebird-linux/lyrebird linux/arti
           cp resources/arti.toml linux/arti
-          patch linux/arti/arti.toml < resources/portable/arti-linux-config.patch
-          cp resources/portable/start-arti linux/arti
+          patch linux/arti/arti.toml < resources/portable/linux/arti-config.patch
+          cp resources/portable/linux/start-arti linux/arti
           chmod 755 linux/arti/arti linux/arti/lyrebird linux/arti/start-arti
           cd linux
           tar czf ../arti-${{ needs.extract-versions.outputs.arti_ver }}-linux-x86_64.tar.gz arti --owner=0 --group=0 --numeric-owner
@@ -130,8 +130,8 @@ jobs:
           cp artifacts/arti-windows/arti-example-config.toml windows/arti
           cp artifacts/lyrebird-windows/lyrebird.exe windows/arti
           cp resources/arti.toml windows/arti
-          patch windows/arti/arti.toml < resources/portable/arti-windows-config.patch
-          cp resources/portable/start-arti.bat windows/arti
+          patch windows/arti/arti.toml < resources/portable/windows/arti-config.patch
+          cp resources/portable/windows/start-arti.bat windows/arti
           cd windows
           zip -Xr ../arti-${{ needs.extract-versions.outputs.arti_ver }}-windows-x86_64.zip arti
 
