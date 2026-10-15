@@ -1,5 +1,5 @@
---- resources/arti.toml	2026-10-10 04:37:05.629879247 +0600
-+++ resources/portable/arti-linux.toml	2026-10-10 04:37:05.629879247 +0600
+--- a/arti.toml
++++ b/arti.toml
 @@ -17,11 +17,11 @@
 
  [[bridges.transports]]
