@@ -79,6 +79,9 @@ build_lyrebird() {
 }
 
 build_arc() {
+    apt-get update -y
+    apt-get install -y patch
+
     target_os="${1}"
 
     case "${target_os}" in
@@ -86,8 +89,9 @@ build_arc() {
         "windows") start_script="start-arti.bat" ;;
     esac
 
-    cp -vf "/out/resources/include/arti-${target_os}.toml" "/out/build/${target_os}/arti.toml"
-    cp -vf "/out/resources/include/${start_script}" "/out/build/${target_os}"
+    cp -vf "/out/resources/arti.toml" "/out/build/${target_os}"
+    patch "/out/build/${target_os}/arti.toml" < "/out/resources/portable/arti-${target_os}-config.patch"
+    cp -vf "/out/resources/portable/${start_script}" "/out/build/${target_os}"
     cp -vrf "/out/build/${target_os}" arti
 
     case "${target_os}" in
@@ -97,7 +101,6 @@ build_arc() {
             ;;
 
         "windows")
-            apt-get update -y
             apt-get install -y zip
 
             zip -Xr "arti-${arti_ver}-${target_os}-x86_64.zip" arti
