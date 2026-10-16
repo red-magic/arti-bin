@@ -5,27 +5,44 @@ Before=nss-lookup.target
 Wants=nss-lookup.target
 
 [Service]
-Type=simple
+Type=exec
 User=arti
 Group=arti
 ExecStart=/usr/bin/arti proxy -c /etc/arti/arti.toml
-ExecReload=/usr/bin/kill -HUP ${MAINPID}
+ExecReload=/bin/kill -HUP ${MAINPID}
 KillSignal=SIGINT
 Restart=on-failure
 RestartSec=10
 TimeoutStopSec=60
 LimitNOFILE=16384
 
+ReadWritePaths=/var/lib/arti
+
 NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
 
 ProtectSystem=strict
-ReadWritePaths=/var/lib/arti
 ProtectHome=yes
 PrivateTmp=yes
 PrivateDevices=yes
+PrivateMounts=yes
+ProtectClock=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=all
 
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-AmbientCapabilities=CAP_NET_BIND_SERVICE
+RestrictAddressFamilies=AF_INET AF_INET6
+
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
 
 [Install]
 WantedBy=multi-user.target
