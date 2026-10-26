@@ -57,7 +57,7 @@ pre_remove_check() {
     if ! id "${user_name}" &> /dev/null; then
         printf "Arti isn't installed\n" 1>&2
         exit 1
-    elif pgrep -u "${user_name}" &> /dev/null; then
+    elif pgrep --quiet -u "${user_name}"; then
         printf "Arti is still running, stop it first\n" 1>&2
         exit 1
     fi
