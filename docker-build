@@ -117,7 +117,7 @@ print_help() {
 }
 
 if [[ "${#}" -gt 1 ]]; then
-    printf "Only 1 argument is accepted\n" 1>&2
+    printf "Too many arguments\n" 1>&2
     print_help
     exit 1
 elif [[ "${#}" -eq 0 ]]; then
@@ -130,7 +130,7 @@ target_os="${1}"
 case "${target_os}" in
     "linux" | "windows") ;;
     *)
-        printf "Invalid argument: %s\n" "${target_os}" 1>&2
+        printf "Invalid target: %s\n" "${target_os}" 1>&2
         print_help
         exit 1
         ;;
