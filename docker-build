@@ -116,32 +116,28 @@ usage() {
     printf "Usage: %s <linux | windows>\n" "${0##*/}"
 }
 
-main() {
-    if [[ "$#" -gt 1 ]]; then
-        printf "Too many arguments\n" 1>&2
+if [[ "$#" -gt 1 ]]; then
+    printf "Too many arguments\n" 1>&2
+    usage
+    exit 1
+elif [[ "$#" -eq 0 ]]; then
+    usage
+    exit 0
+fi
+
+target_os="$1"
+
+case "${target_os}" in
+    "linux" | "windows") ;;
+    *)
+        printf "Invalid target: %s\n" "${target_os}" 1>&2
         usage
         exit 1
-    elif [[ "$#" -eq 0 ]]; then
-        usage
-        exit 0
-    fi
+        ;;
+esac
 
-    target_os="$1"
+mkdir -vp "build/${target_os}"
 
-    case "${target_os}" in
-        "linux" | "windows") ;;
-        *)
-            printf "Invalid target: %s\n" "${target_os}" 1>&2
-            usage
-            exit 1
-            ;;
-    esac
-
-    mkdir -vp "build/${target_os}"
-
-    run_build "${container_arti}" build_arti "${target_os}"
-    run_build "${container_lyrebird}" build_lyrebird "${target_os}"
-    run_build "${container_arc}" build_arc "${target_os}"
-}
-
-main "$@"
+run_build "${container_arti}" build_arti "${target_os}"
+run_build "${container_lyrebird}" build_lyrebird "${target_os}"
+run_build "${container_arc}" build_arc "${target_os}"
