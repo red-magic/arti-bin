@@ -13,9 +13,9 @@ arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver
 lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${lyrebird_ver}/lyrebird-${lyrebird_ver}.tar.gz"
 
 run_build() {
-    local image="${1}"
-    local func_name="${2}"
-    local target_os="${3}"
+    local image="$1"
+    local func_name="$2"
+    local target_os="$3"
 
     docker run \
            --rm \
@@ -30,7 +30,7 @@ run_build() {
 }
 
 build_arti() {
-    local target_os="${1}"
+    local target_os="$1"
     local dependencies cargo_target binary_name
 
     case "${target_os}" in
@@ -63,7 +63,7 @@ build_arti() {
 }
 
 build_lyrebird() {
-    local target_os="${1}"
+    local target_os="$1"
     local binary_name
 
     case "${target_os}" in
@@ -81,7 +81,7 @@ build_lyrebird() {
 }
 
 build_arc() {
-    local target_os="${1}"
+    local target_os="$1"
     local start_script
 
     apt-get update -y
@@ -116,16 +116,16 @@ print_help() {
     printf "Usage: %s <linux | windows>\n" "${0##*/}"
 }
 
-if [[ "${#}" -gt 1 ]]; then
+if [[ "$#" -gt 1 ]]; then
     printf "Too many arguments\n" 1>&2
     print_help
     exit 1
-elif [[ "${#}" -eq 0 ]]; then
+elif [[ "$#" -eq 0 ]]; then
     print_help
     exit 0
 fi
 
-target_os="${1}"
+target_os="$1"
 
 case "${target_os}" in
     "linux" | "windows") ;;

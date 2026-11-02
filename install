@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-[[ "$(id -u)" -ne 0 ]] && exec sudo "${0}" "${1:-}"
+[[ "$(id -u)" -ne 0 ]] && exec sudo "$0" "${1:-}"
 
 arti_ver="2.7.0"
 lyrebird_ver="0.9.0"
@@ -73,7 +73,7 @@ remove_arti() {
     userdel -r "${user_name}" &> /dev/null
 }
 
-case "${1}" in
+case "$1" in
     "remove")
         pre_remove_check
         remove_arti
