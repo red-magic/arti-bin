@@ -13,20 +13,29 @@ arti_url="https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${arti_ver
 lyrebird_url="https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${lyrebird_ver}/lyrebird-${lyrebird_ver}.tar.gz"
 
 run_build() {
+    local oci_cmd
     local image="$1"
     local func_name="$2"
     local target_os="$3"
 
-    docker run \
-           --rm \
-           --env arti_ver="${arti_ver}" \
-           --env arti_url="${arti_url}" \
-           --env lyrebird_ver="${lyrebird_ver}" \
-           --env lyrebird_url="${lyrebird_url}" \
-           -v "$(pwd)":/out:Z \
-           -w /build \
-           "${image}" \
-           /bin/bash -c "set -euo pipefail; $(declare -f "${func_name}"); ${func_name} ${target_os}"
+    if command -v podman &> /dev/null; then
+        oci_cmd="podman"
+    elif command -v docker &> /dev/null; then
+        oci_cmd="docker"
+    else
+        printf "Error: Neither Podman nor Docker is installed" 1>&2
+        exit 1
+    fi
+
+    "${oci_cmd}" run \
+                 --rm \
+                 --env arti_ver="${arti_ver}" \
+                 --env arti_url="${arti_url}" \
+                 --env lyrebird_ver="${lyrebird_ver}" \
+                 --env lyrebird_url="${lyrebird_url}" \
+                 -v "$(pwd)":/out:Z \
+                 "${image}" \
+                 /bin/bash -c "set -euo pipefail; mkdir /build; cd /build; $(declare -f "${func_name}"); ${func_name} ${target_os}"
 }
 
 build_arti() {
