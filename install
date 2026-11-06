@@ -5,7 +5,7 @@ set -euo pipefail
 [[ "$(id -u)" -ne 0 ]] && exec sudo "$0" "${1:-}"
 
 arti_ver="2.8.0"
-lyrebird_ver="0.9.0"
+lyrebird_ver="0.10.0"
 arti_link="https://github.com/red-magic/arti-bin/releases/download/arti-${arti_ver}-lyrebird-${lyrebird_ver}/arti-${arti_ver}-linux-x86_64.tar.gz"
 
 user_name="arti"
