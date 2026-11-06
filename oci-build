@@ -33,7 +33,8 @@ run_build() {
                  --env arti_url="${arti_url}" \
                  --env lyrebird_ver="${lyrebird_ver}" \
                  --env lyrebird_url="${lyrebird_url}" \
-                 -v "$(pwd)":/out:Z \
+                 --security-opt label=disable \
+                 -v "$(pwd)":/out \
                  "${image}" \
                  /bin/bash -c "set -euo pipefail; mkdir /build; cd /build; $(declare -f "${func_name}"); ${func_name} ${target_os}"
 }
