@@ -21,11 +21,29 @@ jobs:
           echo "arti_ver=$arti_ver" >> "$GITHUB_OUTPUT"
           echo "lyrebird_ver=$lyrebird_ver" >> "$GITHUB_OUTPUT"
 
+  sources:
+    name: sources
+    runs-on: ubuntu-26.04
+    needs: extract-versions
+    steps:
+      - name: Download source archives
+        run: |
+          mkdir /out
+          cd /out
+          curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+          curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
+
+      - name: Upload source archives
+        uses: actions/upload-artifact@v7
+        with:
+          name: sources
+          path: /out/*.tar.gz
+
   build-arti:
     name: arti-${{ matrix.target.os }}
     runs-on: ubuntu-26.04
     container: rust:trixie
-    needs: extract-versions
+    needs: [extract-versions, sources]
     strategy:
       matrix:
         target:
@@ -46,11 +64,16 @@ jobs:
           apt-get install -y ${{ matrix.target.dependencies }}
           rustup target add ${{ matrix.target.rust-target }}
 
+      - name: Download source archive
+        uses: actions/download-artifact@v8
+        with:
+          name: sources
+          path: /build
+
       - name: Download and build
         run: |
-          mkdir /build /out
+          mkdir /out
           cd /build
-          curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
           cargo build -p arti --locked --release --features static --target ${{ matrix.target.rust-target }}
@@ -68,7 +91,7 @@ jobs:
     name: lyrebird-${{ matrix.target.os }}
     runs-on: ubuntu-26.04
     container: golang:trixie
-    needs: extract-versions
+    needs: [extract-versions, sources]
     strategy:
       matrix:
         target:
@@ -79,11 +102,16 @@ jobs:
             binary-name: lyrebird.exe
 
     steps:
+      - name: Download source archive
+        uses: actions/download-artifact@v8
+        with:
+          name: sources
+          path: /build
+
       - name: Download and build
         run: |
-          mkdir /build /out
+          mkdir /out
           cd /build
-          curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           tar xf lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
           cd lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}
           GOOS=${{ matrix.target.os }} GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-X main.lyrebirdVersion=${{ needs.extract-versions.outputs.lyrebird_ver }} -w -s" -v -o ${{ matrix.target.binary-name }} ./cmd/lyrebird
@@ -142,3 +170,5 @@ jobs:
           files: |
             arti-${{ needs.extract-versions.outputs.arti_ver }}-linux-x86_64.tar.gz
             arti-${{ needs.extract-versions.outputs.arti_ver }}-windows-x86_64.zip
+            artifacts/sources/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+            artifacts/sources/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
