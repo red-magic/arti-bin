@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir out
           curl -fL https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz \
-            -o out/arti-v${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
+            -o out/arti-${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
           curl -fL https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz \
             -o out/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}-src.tar.gz
 
@@ -75,7 +75,7 @@ jobs:
         run: |
           mkdir /out
           cd /build
-          tar xf arti-v${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
+          tar xf arti-${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
           cargo build -p arti --locked --release --features static --target ${{ matrix.target.rust-target }}
           strip -s target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }}
@@ -171,5 +171,5 @@ jobs:
           files: |
             arti-${{ needs.extract-versions.outputs.arti_ver }}-linux-x86_64.tar.gz
             arti-${{ needs.extract-versions.outputs.arti_ver }}-windows-x86_64.zip
-            artifacts/sources/arti-v${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
+            artifacts/sources/arti-${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
             artifacts/sources/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}-src.tar.gz
