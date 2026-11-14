@@ -1,11 +1,11 @@
 --- a/arti.toml
 +++ b/arti.toml
-@@ -17,11 +17,11 @@
+@@ -17,6 +17,6 @@
 
  [[bridges.transports]]
  protocols = ["snowflake", "obfs4", "webtunnel"]
 -path = "/usr/bin/lyrebird"
-+path = "lyrebird.exe"
++path = ".\\lyrebird.exe"
  arguments = []
  run_on_startup = false
 
