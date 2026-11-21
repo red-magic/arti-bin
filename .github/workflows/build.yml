@@ -29,16 +29,15 @@ jobs:
       - name: Download source archives
         run: |
           mkdir out
-          curl -fL https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz \
-            -o out/arti-${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
-          curl -fL https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz \
-            -o out/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}-src.tar.gz
+          cd out
+          curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+          curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
 
       - name: Upload source archives
         uses: actions/upload-artifact@v7
         with:
           name: sources
-          path: out/*-src.tar.gz
+          path: out/*.tar.gz
 
   build-arti:
     name: arti-${{ matrix.target.os }}
@@ -75,7 +74,7 @@ jobs:
         run: |
           mkdir /out
           cd /build
-          tar xf arti-${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
+          tar xf arti-arti-${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
           cargo build -p arti --locked --release --features static --target ${{ matrix.target.rust-target }}
           strip -s target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }}
@@ -171,5 +170,3 @@ jobs:
           files: |
             arti-${{ needs.extract-versions.outputs.arti_ver }}-linux-x86_64.tar.gz
             arti-${{ needs.extract-versions.outputs.arti_ver }}-windows-x86_64.zip
-            artifacts/sources/arti-${{ needs.extract-versions.outputs.arti_ver }}-src.tar.gz
-            artifacts/sources/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}-src.tar.gz
