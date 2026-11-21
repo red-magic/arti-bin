@@ -1,6 +1,6 @@
 --- a/arti.toml
 +++ b/arti.toml
-@@ -17,6 +17,6 @@
+@@ -17,11 +17,11 @@
 
  [[bridges.transports]]
  protocols = ["snowflake", "obfs4", "webtunnel"]
