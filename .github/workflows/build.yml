@@ -74,7 +74,7 @@ jobs:
         run: |
           mkdir /out
           cd /build
-          tar xf arti-arti-${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+          tar xf arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           cd arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}
           cargo build -p arti --locked --release --features static --target ${{ matrix.target.rust-target }}
           strip -s target/${{ matrix.target.rust-target }}/release/${{ matrix.target.binary-name }}
