@@ -48,11 +48,13 @@ build_arti() {
             dependencies="musl-dev"
             cargo_target="x86_64-unknown-linux-musl"
             binary_name="arti"
+            strip_cmd="strip"
             ;;
         "windows")
             dependencies="mingw-w64"
             cargo_target="x86_64-pc-windows-gnu"
             binary_name="arti.exe"
+            strip_cmd="x86_64-w64-mingw32-strip"
             ;;
     esac
 
@@ -65,7 +67,7 @@ build_arti() {
     cd "arti-arti-v${arti_ver}"
 
     cargo build -p arti --locked --release --features static --target "${cargo_target}"
-    strip -sv "target/${cargo_target}/release/${binary_name}"
+    "${strip_cmd}" -sv "target/${cargo_target}/release/${binary_name}"
 
     cp -vf "target/${cargo_target}/release/${binary_name}" "/out/build/${target_os}"
     cp -vf crates/arti/src/arti-example-config.toml "/out/build/${target_os}"
